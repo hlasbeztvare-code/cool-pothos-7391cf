@@ -52,6 +52,27 @@ def download_image(img_url, filename):
         print(f"Chyba stahování obrázku {img_url}: {e}")
         return ""
 
+def clean_description(html_content):
+    # Remove "Detailní popis produktu" headers
+    html_content = re.sub(r'<h4[^>]*>.*?Detailní popis produktu.*?</h4>', '', html_content, flags=re.IGNORECASE | re.DOTALL)
+    
+    # Convert h2/h3 to simple bold paragraphs
+    html_content = re.sub(r'<h[23][^>]*>(.*?)</h[23]>', r'<p><b>\1</b></p>', html_content, flags=re.IGNORECASE | re.DOTALL)
+    
+    # Strip all attributes from tags (like data-path-to-node, class, style, etc.)
+    html_content = re.sub(r'<([a-zA-Z0-9]+)\s+[^>]*>', r'<\1>', html_content)
+    
+    # Remove nested divs
+    html_content = re.sub(r'</?div[^>]*>', '', html_content, flags=re.IGNORECASE)
+    
+    # Remove empty paragraphs
+    html_content = re.sub(r'<p>\s*(?:&nbsp;)?\s*</p>', '', html_content)
+    
+    # Normalize newlines
+    html_content = re.sub(r'\r\n|\r|\n', '\n', html_content)
+    html_content = re.sub(r'\n+', '\n', html_content).strip()
+    return html_content
+
 for cat in CATEGORIES:
     url = f"{BASE_URL}/{cat}/"
     html = fetch_html(url)
@@ -96,10 +117,7 @@ for cat in CATEGORIES:
             if not desc_match:
                 desc_match = re.search(r'<div[^>]+id="[^"]*description[^"]*"[^>]*>(.*?)</div>', detail_html, re.DOTALL)
             if desc_match:
-                desc = desc_match.group(1).strip()
-                # Vyčistit jen přebytečné Shoptet třídy, zachovat tagy jako p, strong, ul, li
-                desc = re.sub(r'class="[^"]*"', '', desc)
-                desc = re.sub(r'style="[^"]*"', '', desc)
+                desc = clean_description(desc_match.group(1).strip())
                 
             # 3. EXTRAKCE VŠECH OBRÁZKŮ Z GALERIE
             # Shoptet dává fotky do odkazů s třídou image-lightbox nebo datových elementů
