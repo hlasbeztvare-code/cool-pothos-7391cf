@@ -551,11 +551,14 @@
                 
                 <div class="form-group">
                     <label>Úvodní fotka</label>
-                    <div id="post-drag-zone" class="drag-drop-zone">
-                        <p>Přetáhněte sem obrázek nebo klikněte pro výběr</p>
+                    <div id="post-drag-zone" class="drag-drop-zone" style="background: var(--bg-base); position: relative; overflow: hidden; height: 180px; display: flex; align-items: center; justify-content: center;">
+                        <img id="blog-preview-img" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; display: none;" data-uploaded-url="">
+                        <div id="post-drag-text" style="position: relative; z-index: 2; padding: 20px;">
+                            <p>Přetáhněte sem obrázek nebo klikněte pro výběr</p>
+                        </div>
                         <input type="file" id="post-file-input" accept="image/*" style="display:none">
-                        <span id="post-img-path" style="font-size: 0.8rem; color: var(--accent); margin-top: 5px; display: block;"></span>
                     </div>
+                    <span id="post-img-path" style="font-size: 0.8rem; color: var(--accent); margin-top: 5px; display: block;"></span>
                 </div>
 
                 <div class="form-group">
@@ -887,7 +890,13 @@
                 blogEditor.setText('');
             }
             document.getElementById('post-img-path').textContent = '';
-            delete document.getElementById('post-img-path').dataset.url;
+            
+            const preview = document.getElementById('blog-preview-img');
+            preview.src = '';
+            preview.dataset.uploadedUrl = '';
+            preview.style.display = 'none';
+            document.getElementById('post-drag-text').style.display = 'block';
+
             document.getElementById('modal-title').textContent = 'Napsat nový článek';
             document.getElementById('save-post-submit').textContent = 'Uložit článek';
             postFeedback.textContent = '';
@@ -944,7 +953,12 @@
                     if (res.ok && data.success) {
                         const pathEl = document.getElementById('post-img-path');
                         pathEl.textContent = `Nahráno: ${data.imageUrl}`;
-                        pathEl.dataset.url = data.imageUrl;
+                        
+                        const preview = document.getElementById('blog-preview-img');
+                        preview.src = data.imageUrl;
+                        preview.dataset.uploadedUrl = data.imageUrl;
+                        preview.style.display = 'block';
+                        document.getElementById('post-drag-text').style.display = 'none';
                     } else {
                         alert(data.error);
                     }
@@ -960,7 +974,7 @@
             const id = document.getElementById('post-id').value;
             const title = document.getElementById('post-title').value;
             const text = blogEditor ? blogEditor.root.innerHTML : '';
-            const image = document.getElementById('post-img-path').dataset.url || '';
+            const image = document.getElementById('blog-preview-img').dataset.uploadedUrl || '';
 
             postFeedback.textContent = '';
             postFeedback.className = 'feedback';
@@ -998,7 +1012,19 @@
             }
             const pathEl = document.getElementById('post-img-path');
             pathEl.textContent = `Aktuální: ${post.image}`;
-            pathEl.dataset.url = post.image;
+            
+            const preview = document.getElementById('blog-preview-img');
+            if (post.image) {
+                preview.src = post.image;
+                preview.dataset.uploadedUrl = post.image;
+                preview.style.display = 'block';
+                document.getElementById('post-drag-text').style.display = 'none';
+            } else {
+                preview.src = '';
+                preview.dataset.uploadedUrl = '';
+                preview.style.display = 'none';
+                document.getElementById('post-drag-text').style.display = 'block';
+            }
 
             document.getElementById('modal-title').textContent = 'Upravit článek';
             document.getElementById('save-post-submit').textContent = 'Aktualizovat článek';
