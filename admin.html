@@ -251,13 +251,19 @@
             color: var(--text-muted);
         }
 
-        /* Blog Section */
+        /* Blog Section - Sand/Pískový design */
         .blog-section {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
+            background: #f7f3eb;
+            border: 1px solid #e5dec9;
             border-radius: 12px;
             padding: 30px;
             margin-bottom: 40px;
+            color: #2b261f;
+        }
+
+        .blog-section .section-title {
+            color: #2b261f;
+            border-left-color: var(--accent);
         }
 
         .blog-list {
@@ -268,14 +274,15 @@
         }
 
         .blog-item {
-            background: var(--bg-surface-elevated);
-            border: 1px solid var(--border);
-            border-radius: 6px;
+            background: #ffffff;
+            border: 1px solid #e5dec9;
+            border-radius: 12px;
             padding: 20px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             gap: 15px;
+            box-shadow: 0 4px 12px rgba(43, 38, 31, 0.04);
         }
 
         @media (min-width: 768px) {
@@ -295,18 +302,20 @@
             width: 60px;
             height: 60px;
             object-fit: cover;
-            border-radius: 4px;
-            background: var(--bg-base);
+            border-radius: 50% !important; /* Kulatý náhled */
+            background: #ede6d8;
+            border: 1px solid #e5dec9;
         }
 
         .blog-item-title {
             font-weight: 800;
             text-transform: uppercase;
+            color: #2b261f;
         }
 
         .blog-item-meta {
             font-size: 0.8rem;
-            color: var(--text-muted);
+            color: #8c8273;
             margin-top: 4px;
         }
 
@@ -550,8 +559,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="post-text">Obsah článku (text)</label>
-                    <textarea id="post-text" rows="8" required placeholder="Napište obsah článku..."></textarea>
+                    <label>Obsah článku</label>
+                    <input type="hidden" id="post-text" value="">
+                    <div id="post-editor" style="min-height: 250px;"></div>
                 </div>
 
                 <button type="submit" class="btn" id="save-post-submit">Uložit článek</button>
@@ -563,6 +573,21 @@
     <script>
         let authToken = '';
         const quillEditors = {};
+        let blogEditor = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            blogEditor = new Quill('#post-editor', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        ['clean']
+                    ]
+                }
+            });
+        });
 
         // UI Panels
         const authPanel = document.getElementById('auth-panel');
@@ -858,10 +883,13 @@
         addPostBtn.addEventListener('click', () => {
             document.getElementById('post-id').value = '';
             document.getElementById('post-title').value = '';
-            document.getElementById('post-text').value = '';
+            if (blogEditor) {
+                blogEditor.setText('');
+            }
             document.getElementById('post-img-path').textContent = '';
             delete document.getElementById('post-img-path').dataset.url;
             document.getElementById('modal-title').textContent = 'Napsat nový článek';
+            document.getElementById('save-post-submit').textContent = 'Uložit článek';
             postFeedback.textContent = '';
             postModal.style.display = 'flex';
         });
@@ -931,7 +959,7 @@
             e.preventDefault();
             const id = document.getElementById('post-id').value;
             const title = document.getElementById('post-title').value;
-            const text = document.getElementById('post-text').value;
+            const text = blogEditor ? blogEditor.root.innerHTML : '';
             const image = document.getElementById('post-img-path').dataset.url || '';
 
             postFeedback.textContent = '';
@@ -965,12 +993,15 @@
 
             document.getElementById('post-id').value = post.id;
             document.getElementById('post-title').value = post.title;
-            document.getElementById('post-text').value = post.text;
+            if (blogEditor) {
+                blogEditor.root.innerHTML = post.text || '';
+            }
             const pathEl = document.getElementById('post-img-path');
             pathEl.textContent = `Aktuální: ${post.image}`;
             pathEl.dataset.url = post.image;
 
             document.getElementById('modal-title').textContent = 'Upravit článek';
+            document.getElementById('save-post-submit').textContent = 'Aktualizovat článek';
             postFeedback.textContent = '';
             postModal.style.display = 'flex';
         }
