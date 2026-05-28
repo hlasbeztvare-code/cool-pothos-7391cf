@@ -10,6 +10,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
     
+    <!-- Quill.js CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
+    
     <style>
         :root {
             --bg-base: #0a0a0c;
@@ -415,6 +419,47 @@
             transform: translateX(24px);
             background-color: var(--accent);
         }
+
+        /* ── QUILL DARK THEME OVERRIDES ── */
+        .ql-toolbar.ql-snow {
+            border-color: var(--border) !important;
+            background: var(--bg-surface);
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+        }
+        .ql-container.ql-snow {
+            border-color: var(--border) !important;
+            background: var(--bg-surface-elevated);
+            border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 6px;
+        }
+        .ql-toolbar.ql-snow .ql-stroke {
+            stroke: var(--text-muted) !important;
+        }
+        .ql-toolbar.ql-snow .ql-fill {
+            fill: var(--text-muted) !important;
+        }
+        .ql-toolbar.ql-snow .ql-picker {
+            color: var(--text-muted) !important;
+        }
+        .ql-toolbar.ql-snow button:hover .ql-stroke,
+        .ql-toolbar.ql-snow button.ql-active .ql-stroke {
+            stroke: var(--accent) !important;
+        }
+        .ql-toolbar.ql-snow button:hover .ql-fill,
+        .ql-toolbar.ql-snow button.ql-active .ql-fill {
+            fill: var(--accent) !important;
+        }
+        .ql-editor {
+            color: var(--text-main);
+            font-family: var(--font);
+            font-size: 0.95rem;
+            min-height: 150px;
+        }
+        .ql-editor.ql-blank::before {
+            color: var(--text-muted) !important;
+            font-style: normal;
+        }
     </style>
 </head>
 <body>
@@ -497,6 +542,7 @@
 
     <script>
         let authToken = '';
+        const quillEditors = {};
 
         // UI Panels
         const authPanel = document.getElementById('auth-panel');
@@ -606,7 +652,8 @@
 
                         <div class="form-group">
                             <label>Popis</label>
-                            <textarea id="desc-${p.id}" rows="4">${p.description || ''}</textarea>
+                            <input type="hidden" id="desc-${p.id}" value="">
+                            <div id="editor-${p.id}"></div>
                         </div>
 
                         <button class="btn" onclick="updateProduct('${p.id}')">Uložit produkt</button>
@@ -614,6 +661,22 @@
                     `;
 
                     container.appendChild(card);
+
+                    // Setup Quill Editor
+                    setTimeout(() => {
+                        const quill = new Quill(`#editor-${p.id}`, {
+                            theme: 'snow',
+                            modules: {
+                                toolbar: [
+                                    ['bold', 'italic', 'underline'],
+                                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                    ['clean']
+                                ]
+                            }
+                        });
+                        quill.clipboard.dangerouslyPasteHTML(p.description || '');
+                        quillEditors[p.id] = quill;
+                    }, 0);
 
                     // Setup Image Upload handlers for each product card
                     setupImageUpload(p.id);
@@ -690,7 +753,8 @@
         async function updateProduct(productId) {
             const price = document.getElementById(`price-${productId}`).value;
             const inStock = document.getElementById(`stock-${productId}`).checked;
-            const description = document.getElementById(`desc-${productId}`).value;
+            const quill = quillEditors[productId];
+            const description = quill ? quill.root.innerHTML : '';
             const preview = document.getElementById(`preview-img-${productId}`);
             const image = preview.dataset.uploadedUrl;
             const feedback = document.getElementById(`feedback-${productId}`);
