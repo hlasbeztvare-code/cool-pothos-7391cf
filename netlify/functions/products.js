@@ -13,31 +13,26 @@ exports.handler = async function(event, context) {
     return { statusCode: 200, headers, body: '' };
   }
 
-  if (event.httpMethod !== 'GET') {
-    return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method Not Allowed' }) };
-  }
-
   try {
     const store = getStore({ name: 'eshop-data', consistency: 'strong' });
-    let posts = await store.get('blog', { type: 'json' });
+    let products = await store.get('products', { type: 'json' });
 
-    if (!posts) {
-      const blogPath = path.join(process.cwd(), 'blog.json');
-      if (fs.existsSync(blogPath)) {
-        posts = JSON.parse(fs.readFileSync(blogPath, 'utf8'));
-      } else {
-        posts = [];
-      }
-      await store.set('blog', JSON.stringify(posts));
+    if (!products) {
+      // Fallback to local file if Blobs is empty
+      const productsPath = path.join(process.cwd(), 'products.json');
+      const productsData = fs.readFileSync(productsPath, 'utf8');
+      products = JSON.parse(productsData);
+      // Initialize store
+      await store.set('products', JSON.stringify(products));
     }
 
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify(posts)
+      body: JSON.stringify(products)
     };
   } catch (error) {
-    console.error('Blog fetch error:', error);
+    console.error('Products fetch error:', error);
     return {
       statusCode: 500,
       headers,

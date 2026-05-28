@@ -29,15 +29,19 @@ exports.handler = async function(event, context) {
       };
     }
 
-    // Load products.json securely on the server
-    const productsPath = path.join(process.cwd(), 'products.json');
-    let dbProducts = [];
-    try {
-      const productsData = fs.readFileSync(productsPath, 'utf8');
-      dbProducts = JSON.parse(productsData);
-    } catch (err) {
-      console.error('Failed to load products.json:', err);
-      return { statusCode: 500, headers, body: JSON.stringify({ error: 'Database error' }) };
+    // Load products database from Netlify Blobs securely on the server
+    const { getStore } = require('@netlify/blobs');
+    const store = getStore({ name: 'eshop-data', consistency: 'strong' });
+    let dbProducts = await store.get('products', { type: 'json' });
+    if (!dbProducts) {
+      const productsPath = path.join(process.cwd(), 'products.json');
+      try {
+        const productsData = fs.readFileSync(productsPath, 'utf8');
+        dbProducts = JSON.parse(productsData);
+      } catch (err) {
+        console.error('Failed to load products.json fallback:', err);
+        return { statusCode: 500, headers, body: JSON.stringify({ error: 'Database error' }) };
+      }
     }
 
     let totalCzk = 0;

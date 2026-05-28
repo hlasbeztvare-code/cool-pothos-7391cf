@@ -4,10 +4,10 @@
   "description": "Serverless backend and Stripe integration for EvaLangrova e-shop",
   "main": "api/checkout.js",
   "dependencies": {
+    "@netlify/blobs": "^10.7.8",
     "stripe": "^14.0.0"
   },
-  "devDependencies": {},
   "scripts": {
-    "dev": "vercel dev"
+    "dev": "netlify dev"
   }
 }

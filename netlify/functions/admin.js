@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { getStore } = require('@netlify/blobs');
 
 function isAuthorized(event) {
   const authHeader = event.headers.authorization || event.headers.Authorization || '';
@@ -57,9 +58,14 @@ exports.handler = async function(event, context) {
         return { statusCode: 400, headers, body: JSON.stringify({ error: 'Chybí ID produktu' }) };
       }
 
-      const productsPath = path.join(process.cwd(), 'products.json');
-      const productsData = fs.readFileSync(productsPath, 'utf8');
-      const products = JSON.parse(productsData);
+      const store = getStore({ name: 'eshop-data', consistency: 'strong' });
+      let products = await store.get('products', { type: 'json' });
+
+      if (!products) {
+        const productsPath = path.join(process.cwd(), 'products.json');
+        const productsData = fs.readFileSync(productsPath, 'utf8');
+        products = JSON.parse(productsData);
+      }
 
       const productIndex = products.findIndex(p => p.id === id);
       if (productIndex === -1) {
@@ -79,7 +85,7 @@ exports.handler = async function(event, context) {
         products[productIndex].localImg = image;
       }
 
-      fs.writeFileSync(productsPath, JSON.stringify(products, null, 4), 'utf8');
+      await store.set('products', JSON.stringify(products));
       return { statusCode: 200, headers, body: JSON.stringify({ success: true, products }) };
     } catch (err) {
       console.error(err);
@@ -97,10 +103,16 @@ exports.handler = async function(event, context) {
         return { statusCode: 400, headers, body: JSON.stringify({ error: 'Chybí povinné údaje článku (nadpis, obsah)' }) };
       }
 
-      const blogPath = path.join(process.cwd(), 'blog.json');
-      let blogPosts = [];
-      if (fs.existsSync(blogPath)) {
-        blogPosts = JSON.parse(fs.readFileSync(blogPath, 'utf8'));
+      const store = getStore({ name: 'eshop-data', consistency: 'strong' });
+      let blogPosts = await store.get('blog', { type: 'json' });
+
+      if (!blogPosts) {
+        const blogPath = path.join(process.cwd(), 'blog.json');
+        if (fs.existsSync(blogPath)) {
+          blogPosts = JSON.parse(fs.readFileSync(blogPath, 'utf8'));
+        } else {
+          blogPosts = [];
+        }
       }
 
       const slug = title
@@ -137,7 +149,7 @@ exports.handler = async function(event, context) {
         blogPosts.unshift(newPost);
       }
 
-      fs.writeFileSync(blogPath, JSON.stringify(blogPosts, null, 4), 'utf8');
+      await store.set('blog', JSON.stringify(blogPosts));
       return { statusCode: 200, headers, body: JSON.stringify({ success: true, posts: blogPosts }) };
     } catch (err) {
       console.error(err);
@@ -154,14 +166,21 @@ exports.handler = async function(event, context) {
         return { statusCode: 400, headers, body: JSON.stringify({ error: 'Chybí ID článku' }) };
       }
 
-      const blogPath = path.join(process.cwd(), 'blog.json');
-      if (fs.existsSync(blogPath)) {
-        let blogPosts = JSON.parse(fs.readFileSync(blogPath, 'utf8'));
-        blogPosts = blogPosts.filter(p => p.id !== id);
-        fs.writeFileSync(blogPath, JSON.stringify(blogPosts, null, 4), 'utf8');
-        return { statusCode: 200, headers, body: JSON.stringify({ success: true, posts: blogPosts }) };
+      const store = getStore({ name: 'eshop-data', consistency: 'strong' });
+      let blogPosts = await store.get('blog', { type: 'json' });
+
+      if (!blogPosts) {
+        const blogPath = path.join(process.cwd(), 'blog.json');
+        if (fs.existsSync(blogPath)) {
+          blogPosts = JSON.parse(fs.readFileSync(blogPath, 'utf8'));
+        } else {
+          blogPosts = [];
+        }
       }
-      return { statusCode: 404, headers, body: JSON.stringify({ error: 'Soubor s články neexistuje' }) };
+
+      blogPosts = blogPosts.filter(p => p.id !== id);
+      await store.set('blog', JSON.stringify(blogPosts));
+      return { statusCode: 200, headers, body: JSON.stringify({ success: true, posts: blogPosts }) };
     } catch (err) {
       console.error(err);
       return { statusCode: 500, headers, body: JSON.stringify({ error: 'Nepodařilo se smazat článek' }) };
