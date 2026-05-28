@@ -8,7 +8,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <!-- Quill.js CDN -->
     <link href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css" rel="stylesheet" />
@@ -27,6 +27,10 @@
             --danger: #e65050;
             --success: #50e690;
             --font: 'Outfit', sans-serif;
+        }
+
+        *, body, input, button, textarea, select {
+            font-family: 'Outfit', sans-serif !important;
         }
 
         * {
@@ -296,7 +300,8 @@
         }
 
         .blog-item-title {
-            font-weight: 600;
+            font-weight: 800;
+            text-transform: uppercase;
         }
 
         .blog-item-meta {
@@ -421,6 +426,11 @@
         }
 
         /* ── QUILL DARK THEME OVERRIDES ── */
+        .ql-container,
+        .ql-editor,
+        .ql-editor * {
+            font-family: 'Outfit', sans-serif !important;
+        }
         .ql-toolbar.ql-snow {
             border-color: var(--border) !important;
             background: var(--bg-surface);
@@ -452,9 +462,19 @@
         }
         .ql-editor {
             color: var(--text-main);
-            font-family: var(--font);
-            font-size: 0.95rem;
+            font-size: 13px;
+            line-height: 1.7;
             min-height: 150px;
+        }
+        .ql-editor p, .ql-editor ul, .ql-editor li {
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--text-muted) !important;
+            margin-bottom: 12px;
+        }
+        .ql-editor strong, .ql-editor b {
+            font-weight: 800;
+            color: var(--text-main) !important;
         }
         .ql-editor.ql-blank::before {
             color: var(--text-muted) !important;
@@ -635,7 +655,7 @@
                             <input type="file" id="file-${p.id}" accept="image/*" style="display:none">
                         </div>
 
-                        <h3 style="margin-bottom: 15px; font-weight: 600;">${p.name}</h3>
+                        <h3 style="margin-bottom: 15px; font-weight: 800; text-transform: uppercase;">${p.name}</h3>
 
                         <div class="form-group">
                             <label>Cena (Kč)</label>
