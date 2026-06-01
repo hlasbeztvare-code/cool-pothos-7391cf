@@ -14,16 +14,24 @@ exports.handler = async function(event, context) {
   }
 
   try {
-    const store = getStore({ name: 'eshop-data', consistency: 'strong' });
-    let products = await store.get('products', { type: 'json' });
+    let products = null;
+    try {
+      const store = getStore({ name: 'eshop-data', consistency: 'strong' });
+      products = await store.get('products', { type: 'json' });
 
-    if (!products) {
-      // Fallback to local file if Blobs is empty
+      if (!products) {
+        // Fallback to local file if Blobs is empty
+        const productsPath = path.join(process.cwd(), 'products.json');
+        const productsData = fs.readFileSync(productsPath, 'utf8');
+        products = JSON.parse(productsData);
+        // Initialize store
+        await store.set('products', JSON.stringify(products));
+      }
+    } catch (blobError) {
+      console.warn('Netlify Blobs not available, falling back to local files:', blobError.message);
       const productsPath = path.join(process.cwd(), 'products.json');
       const productsData = fs.readFileSync(productsPath, 'utf8');
       products = JSON.parse(productsData);
-      // Initialize store
-      await store.set('products', JSON.stringify(products));
     }
 
     return {

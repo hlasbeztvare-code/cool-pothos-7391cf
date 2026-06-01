@@ -5,9 +5,20 @@
         "price": "990 Kč",
         "description": "<p><b>Geometrická exploze obrazu pro odvážnou tvorbu 💎</b></p>\n<p>Tento filtr využívá precizně broušené optické sklo s několika plochami pod různými úhly. Funguje na principu lomu světla, kdy středový obraz zůstává zachován, zatímco jeho části se replikují po obvodu.</p>\n<p><b>Vizuální charakteristika:</b></p>\n<ul>\n<li><strong>Multiplikace obrazu</strong>: Jeden objekt se v záběru objeví hned několikrát v precizních segmentech.</li>\n<li><strong>Dynamické rotace</strong>: Filtr je v otočné obroučce. Otáčením můžete měnit pozici replikovaných obrazů v reálném čase.</li>\n<li><strong>Abstraktní okraje</strong>: Scéna se tříští do geometrických tvarů, zatímco střed může zůstat čitelný.</li>\n</ul>\n<p><b>Kdy jej použít?</b></p>\n<ul>\n<li><strong>Hudební klipy:</strong> Ideální pro navození psychedelické atmosféry nebo snových vizí.</li>\n<li><strong>Noční město a neony:</strong> Rozstříští pouliční lampy a reklamy do fascinující barevné mozaiky.</li>\n<li><strong>Artové portréty:</strong> Umístěte obličej do středu a nechte zbytek scény „explodovat“ do stran.</li>\n<li><strong>Makro a detaily:</strong> Z obyčejného listu nebo květu vytvoříte symetrický ornament připomínající mandalu.</li>\n</ul>\n<p><b>Pro-tip:</b> Nejlepších výsledků dosáhnete s objektivy s delší ohniskovou vzdáleností (50 mm a více). Při nízkých clonách se hrany sekaného skla krásně zjemní.</p>",
         "images": [
-            "images/kaleidoscope_0.png"
+            "images/kaleidoscope_0.png",
+            "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=600&q=80",
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=600&q=80"
         ],
         "localImg": "images/kaleidoscope_0.png",
+        "variants": [
+            "Classic (5-Prizma)",
+            "Subtle (3-Prizma)"
+        ],
+        "sizes": [
+            {"size": "67 mm", "price": 890, "stock": 3},
+            {"size": "77 mm", "price": 990, "stock": 12},
+            {"size": "82 mm", "price": 1090, "stock": 0}
+        ],
         "inStock": true
     },
     {
@@ -16,9 +27,22 @@
         "price": "990 Kč",
         "description": "<p><b>✨ Objevte kouzlo filmové atmosféry: Profesionální fotografický filtr FOG</b></p>\n<p>Toužíte do svých snímků vnést nefalšovanou snovou atmosféru, kterou znáte z klasických celuloidových filmů? Fotografický filtr <strong>FOG</strong> je nepostradatelným nástrojem pro kreativní tvůrce, kteří chtějí vystoupit z řady dokonale ostrých, ale často chladných a příliš technických digitálních záběrů. Tento prémiový filtr jemně rozostřuje dopadající světlo a citlivě zjemňuje mikro-detaily. Výsledkem je podmanivý, něžný a hluboce romantický efekt, který povýší každou fotografii na umělecké dílo – to vše <strong>bez jakékoliv ztráty žádoucího kontrastu nebo hloubky černé</strong>.</p>\n<p><b>📸 Jak filtr FOG funguje v praxi?</b></p>\n<p>Tajemství dokonalého výsledku spočívá v samotné konstrukci. Základem filtru FOG je <strong>špičkové optické sklo nejvyšší jakosti</strong>, v jehož vnitřní struktuře jsou s absolutní precizností rovnoměrně rozprostřeny tisíce mikroskopických částic. Tyto částice fungují jako sofistikovaná, oku neviditelná síť. Jakmile skrze ně prochází světlo, jemně se láme a rozptyluje, což snímkům dodává přirozený organický nádech, který v postprocesu jen stěží napodobíte.</p>",
         "images": [
-            "images/fog_0.png"
+            "images/fog_0.png",
+            "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=600&q=80",
+            "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=600&q=80"
         ],
         "localImg": "images/fog_0.png",
+        "variants": [
+            "Fog Soft (1/4)",
+            "Fog Classic (1/2)",
+            "Fog Heavy (1/1)"
+        ],
+        "sizes": [
+            {"size": "67 mm", "price": 890, "stock": 5},
+            {"size": "72 mm", "price": 940, "stock": 1},
+            {"size": "77 mm", "price": 990, "stock": 18},
+            {"size": "82 mm", "price": 1090, "stock": 7}
+        ],
         "inStock": true
     },
     {
@@ -27,9 +51,20 @@
         "price": "990 Kč",
         "description": "<p><b>Magický prstenec světla, který izoluje váš objekt 🎞️</b></p>\n<p>Tento filtr využívá speciálně broušené optické sklo s radiálními fazetami. Vytváří unikátní optickou deformaci, která přirozeně vede oko diváka přímo do středu kompozice k vašemu hlavnímu objektu.</p>\n<p><b>Vizuální charakteristika:</b></p>\n<ul>\n<li><strong>Magický prstenec</strong> (The Halo Loop): Kolem středu snímku vytváří zářivý, vířivý kruh světla, který izoluje subjekt a dodává fotce hloubku.</li>\n<li><strong>Radiální rozostření:</strong> Okraje snímku se jemně rozmývají do pohybu. Vytváří dynamický efekt tunelového vidění.</li>\n<li><strong>Hra s barvami:</strong> Filtr láme paprsky tak, že v prstenci vytváří jemné duhové odlesky nebo sytý barevný opar.</li>\n<li><strong>Filmový soft-touch</strong>: Zatímco střed zůstává ostrý, okolí získává organický, analogový vzhled.</li>\n</ul>\n<p><b>Kdy jej použít?</b></p>\n<ul>\n<li><strong>Street fotografie:</strong> Pro zdůraznění postavy v rušném městském prostředí.</li>\n<li><strong>Módní fotografie:</strong> Pokud chcete vystoupit z davu a dodat snímkům dynamiku.</li>\n<li><strong>Akční záběry: </strong>Skvěle funguje i ve videu, kde prstenec dynamicky reaguje na zdroje světla.</li>\n</ul>\n<p><b>Pro-tip:</b> Použijte nižší clonové číslo (např. f/1.8 – f/2.8). Rozostření okrajů pak bude působit přirozeněji.</p>",
         "images": [
-            "images/halo_0.jpg"
+            "images/halo_0.jpg",
+            "images/halo_1.jpg",
+            "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=600&q=80"
         ],
         "localImg": "images/halo_0.jpg",
+        "variants": [
+            "Halo Classic (Neutrální)",
+            "Halo Gold (Hřejivý opar)"
+        ],
+        "sizes": [
+            {"size": "67 mm", "price": 890, "stock": 2},
+            {"size": "77 mm", "price": 990, "stock": 14},
+            {"size": "82 mm", "price": 1090, "stock": 4}
+        ],
         "inStock": true
     }
 ]

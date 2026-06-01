@@ -3,7 +3,7 @@
    Logic: Shopping Cart, Interactive Canvas Prism Animation, Form Submissions
    ========================================================================== */
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     'use strict';
 
     /* ── 1. DYNAMICKÝ ROK V PATIČCE ── */
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
             cart = JSON.parse(savedCart);
             updateCartUI();
         }
-    } catch(e) {
+    } catch (e) {
         console.error('Nelze načíst košík:', e);
     }
 
@@ -45,50 +45,88 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    cartTrigger.addEventListener('click', function() { toggleCart(true); });
-    cartClose.addEventListener('click', function() { toggleCart(false); });
-    cartOverlay.addEventListener('click', function() { toggleCart(false); });
+    cartTrigger.addEventListener('click', function () { toggleCart(true); });
+    cartClose.addEventListener('click', function () { toggleCart(false); });
+    cartOverlay.addEventListener('click', function () { toggleCart(false); });
 
-    // Přidání do košíku
-    document.querySelectorAll('.add-to-cart-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
+    // Generalized Add to Cart helper supporting variants and sizes
+    window.addToCart = function (id, name, price, img, variant, size, quantity) {
+        quantity = quantity || 1;
+        variant = variant || 'Classic';
+        size = size || '77 mm';
+
+        // Create a unique composite key for the variant/size combination
+        var variantKey = variant.replace(/[^a-zA-Z0-9]/g, '');
+        var sizeKey = size.replace(/[^a-zA-Z0-9]/g, '');
+        var cartItemId = id + '-' + variantKey + '-' + sizeKey;
+
+        var displayName = name + ' (' + variant + ', ' + size + ')';
+
+        var existingItem = cart.find(function (item) { return item.id === cartItemId; });
+        if (existingItem) {
+            existingItem.quantity += quantity;
+        } else {
+            cart.push({
+                id: cartItemId,
+                productId: id,
+                name: displayName,
+                price: price,
+                img: img,
+                quantity: quantity,
+                variant: variant,
+                size: size
+            });
+        }
+
+        saveCart();
+        updateCartUI();
+        toggleCart(true); // Open drawer on addition
+    };
+
+    // Přidání do košíku z úvodní strany (homepage fallback se 77mm a výchozí variantou)
+    document.querySelectorAll('.add-to-cart-btn').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation(); // prevent navigation on card click
+            e.preventDefault();
             var id = this.getAttribute('data-id');
             var name = this.getAttribute('data-name');
             var price = parseInt(this.getAttribute('data-price'), 10);
             var img = this.getAttribute('data-img');
 
-            // Hledání duplicity
-            var existingItem = cart.find(function(item) { return item.id === id; });
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                cart.push({
-                    id: id,
-                    name: name,
-                    price: price,
-                    img: img,
-                    quantity: 1
-                });
-            }
+            // Map default variants for quick add
+            var defaultVariant = 'Classic';
+            if (id === 'kaleidoscope') defaultVariant = 'Classic (5-Prizma)';
+            else if (id === 'fog') defaultVariant = 'Fog Classic (1/2)';
+            else if (id === 'halo') defaultVariant = 'Halo Classic (Neutrální)';
 
-            // Uložení a UI update
-            saveCart();
-            updateCartUI();
-            toggleCart(true); // Otevřít po přidání
+            window.addToCart(id, name, price, img, defaultVariant, '77 mm', 1);
+        });
+    });
+
+    // Povolení prokliku na detail z celé produktové karty na úvodní straně
+    document.querySelectorAll('.product-card').forEach(function (card) {
+        card.addEventListener('click', function (e) {
+            // Ignorujeme navigaci, pokud uživatel klikl přímo na "Do košíku" tlačítko
+            if (e.target.closest('.add-to-cart-btn')) return;
+
+            var link = this.querySelector('a.product-card-link') || this.querySelector('a');
+            if (link && link.href) {
+                window.location.href = link.href;
+            }
         });
     });
 
     function saveCart() {
         try {
             localStorage.setItem('fotofiltry_cart', JSON.stringify(cart));
-        } catch(e) {
+        } catch (e) {
             console.error('Nelze uložit košík:', e);
         }
     }
 
     function updateCartUI() {
         // Počítadlo v hlavičce
-        var totalItems = cart.reduce(function(acc, item) { return acc + item.quantity; }, 0);
+        var totalItems = cart.reduce(function (acc, item) { return acc + item.quantity; }, 0);
         cartCounter.textContent = totalItems;
 
         if (cart.length === 0) {
@@ -101,22 +139,22 @@ document.addEventListener('DOMContentLoaded', function() {
         cartItemsContainer.innerHTML = '';
         var totalSum = 0;
 
-        cart.forEach(function(item) {
+        cart.forEach(function (item) {
             var itemTotal = item.price * item.quantity;
             totalSum += itemTotal;
 
             var itemEl = document.createElement('div');
             itemEl.className = 'cart-item';
-            itemEl.innerHTML = 
-                '<img src="' + item.img + '" alt="' + item.name + '" class="cart-item-img" onerror="this.src=\'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=80&q=80\'">' +
+            itemEl.innerHTML =
+                '<img src="' + item.img + '" alt="' + item.name + '" class="cart-item-img" loading="lazy" onerror="this.src=\'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=80&q=80\'">' +
                 '<div class="cart-item-details">' +
-                    '<h4>' + item.name + '</h4>' +
-                    '<p>' + item.quantity + '× ' + item.price + ' Kč</p>' +
+                '<h4>' + item.name + '</h4>' +
+                '<p>' + item.quantity + '× ' + item.price + ' Kč</p>' +
                 '</div>' +
                 '<button class="cart-item-remove" data-id="' + item.id + '">×</button>';
-            
+
             // Tlačítko smazat
-            itemEl.querySelector('.cart-item-remove').addEventListener('click', function() {
+            itemEl.querySelector('.cart-item-remove').addEventListener('click', function () {
                 removeItem(item.id);
             });
 
@@ -127,30 +165,48 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function removeItem(id) {
-        cart = cart.filter(function(item) { return item.id !== id; });
+        cart = cart.filter(function (item) { return item.id !== id; });
         saveCart();
         updateCartUI();
     }
 
     // Checkout button kliknutí
-    checkoutBtn.addEventListener('click', function() {
-        var itemsText = cart.map(function(item) {
+    checkoutBtn.addEventListener('click', function () {
+        var itemsText = cart.map(function (item) {
             return item.name + ' (' + item.quantity + 'x)';
         }).join(', ');
-        
-        // Sjednotit s objednávkovým formulářem
+
         var contactSection = document.getElementById('kontakt');
         if (contactSection) {
             toggleCart(false);
             contactSection.scrollIntoView({ behavior: 'smooth' });
-            
+
             var msgInput = document.getElementById('form-message');
             if (msgInput) {
                 msgInput.value = 'Mám zájem o rychlou objednávku těchto filtrů: ' + itemsText + '. Prosím o zaslání platebních údajů.';
                 msgInput.focus();
             }
+        } else {
+            // Save checkout prefill and redirect to homepage contacts
+            localStorage.setItem('checkout_prefill_msg', 'Mám zájem o rychlou objednávku těchto filtrů: ' + itemsText + '. Prosím o zaslání platebních údajů.');
+            window.location.href = 'index.html#kontakt';
         }
     });
+
+    // Prefill contact form from checkout redirect on page load
+    if (window.location.hash === '#kontakt') {
+        var prefillMsg = localStorage.getItem('checkout_prefill_msg');
+        if (prefillMsg) {
+            var msgInput = document.getElementById('form-message');
+            if (msgInput) {
+                msgInput.value = prefillMsg;
+                localStorage.removeItem('checkout_prefill_msg');
+                setTimeout(function () {
+                    msgInput.focus();
+                }, 500);
+            }
+        }
+    }
 
     // Load Stripe.js dynamically
     var stripeScript = document.createElement('script');
@@ -162,9 +218,9 @@ document.addEventListener('DOMContentLoaded', function() {
     var feedback = document.getElementById('form-feedback');
 
     if (form) {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', function (e) {
             e.preventDefault();
-            
+
             var name = document.getElementById('form-name').value;
             var email = document.getElementById('form-email').value;
             var phone = document.getElementById('form-phone').value;
@@ -192,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function() {
             feedback.className = 'form-feedback';
             feedback.textContent = '';
 
-            var checkoutItems = cart.map(function(item) {
+            var checkoutItems = cart.map(function (item) {
                 return { id: item.id, quantity: item.quantity };
             });
 
@@ -213,137 +269,137 @@ document.addEventListener('DOMContentLoaded', function() {
                     items: checkoutItems
                 })
             })
-            .then(function(res) {
-                if (!res.ok) {
-                    return res.json().then(function(err) { throw new Error(err.error || 'Checkout API error'); });
-                }
-                return res.json();
-            })
-            .then(function(data) {
-                if (!window.Stripe) {
-                    throw new Error('Knihovna Stripe se nenačetla. Zkuste to prosím znovu.');
-                }
+                .then(function (res) {
+                    if (!res.ok) {
+                        return res.json().then(function (err) { throw new Error(err.error || 'Checkout API error'); });
+                    }
+                    return res.json();
+                })
+                .then(function (data) {
+                    if (!window.Stripe) {
+                        throw new Error('Knihovna Stripe se nenačetla. Zkuste to prosím znovu.');
+                    }
 
-                var stripe = Stripe(data.publishableKey);
-                var elements = stripe.elements();
+                    var stripe = Stripe(data.publishableKey);
+                    var elements = stripe.elements();
 
-                // Build a premium minimalist card payment modal overlay
-                var modal = document.createElement('div');
-                modal.id = 'stripe-payment-modal';
-                modal.style.position = 'fixed';
-                modal.style.top = '0';
-                modal.style.left = '0';
-                modal.style.width = '100%';
-                modal.style.height = '100%';
-                modal.style.background = 'rgba(0, 0, 0, 0.85)';
-                modal.style.backdropFilter = 'blur(8px)';
-                modal.style.display = 'flex';
-                modal.style.justifyContent = 'center';
-                modal.style.alignItems = 'center';
-                modal.style.zIndex = '9999';
-                modal.style.fontFamily = "'Outfit', sans-serif";
+                    // Build a premium minimalist card payment modal overlay
+                    var modal = document.createElement('div');
+                    modal.id = 'stripe-payment-modal';
+                    modal.style.position = 'fixed';
+                    modal.style.top = '0';
+                    modal.style.left = '0';
+                    modal.style.width = '100%';
+                    modal.style.height = '100%';
+                    modal.style.background = 'rgba(0, 0, 0, 0.85)';
+                    modal.style.backdropFilter = 'blur(8px)';
+                    modal.style.display = 'flex';
+                    modal.style.justifyContent = 'center';
+                    modal.style.alignItems = 'center';
+                    modal.style.zIndex = '9999';
+                    modal.style.fontFamily = "'Outfit', sans-serif";
 
-                modal.innerHTML = 
-                    '<div style="background:#121216; border:1px solid #22222a; border-radius:12px; padding:30px; width:100%; max-width:420px; box-shadow:0 20px 40px rgba(0,0,0,0.5); color:#f3f3f6; position:relative;">' +
+                    modal.innerHTML =
+                        '<div style="background:#121216; border:1px solid #22222a; border-radius:12px; padding:30px; width:100%; max-width:420px; box-shadow:0 20px 40px rgba(0,0,0,0.5); color:#f3f3f6; position:relative;">' +
                         '<button id="stripe-modal-close" style="position:absolute; top:20px; right:20px; background:none; border:none; color:#8e8e9f; font-size:1.5rem; cursor:pointer; line-height:1;">×</button>' +
                         '<h3 style="margin:0 0 10px 0; font-size:1.4rem; font-weight:700; color:#f3f3f6;">Dokončení platby</h3>' +
                         '<p style="margin:0 0 20px 0; font-size:0.9rem; color:#8e8e9f;">Celková částka: <strong style="color:#d68c3f;">' + data.totalAmountCzk + ' Kč</strong> (včetně poštovného 100 Kč)</p>' +
                         '<form id="stripe-card-form">' +
-                            '<div style="margin-bottom:20px; text-align:left;">' +
-                                '<label style="display:block; font-size:0.8rem; color:#8e8e9f; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Platební karta</label>' +
-                                '<div id="stripe-card-element" style="background:#1a1a22; border:1px solid #22222a; border-radius:6px; padding:12px 16px;"></div>' +
-                                '<div id="stripe-card-errors" role="alert" style="color:#e65050; font-size:0.85rem; margin-top:8px;"></div>' +
-                            '</div>' +
-                            '<button type="submit" id="stripe-submit-payment" style="width:100%; background:#d68c3f; color:#000; border:none; border-radius:6px; padding:14px; font-weight:600; font-size:0.95rem; cursor:pointer; transition:all 0.2s ease;">Zaplatit a dokončit</button>' +
+                        '<div style="margin-bottom:20px; text-align:left;">' +
+                        '<label style="display:block; font-size:0.8rem; color:#8e8e9f; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Platební karta</label>' +
+                        '<div id="stripe-card-element" style="background:#1a1a22; border:1px solid #22222a; border-radius:6px; padding:12px 16px;"></div>' +
+                        '<div id="stripe-card-errors" role="alert" style="color:#e65050; font-size:0.85rem; margin-top:8px;"></div>' +
+                        '</div>' +
+                        '<button type="submit" id="stripe-submit-payment" style="width:100%; background:#d68c3f; color:#000; border:none; border-radius:6px; padding:14px; font-weight:600; font-size:0.95rem; cursor:pointer; transition:all 0.2s ease;">Zaplatit a dokončit</button>' +
                         '</form>' +
-                    '</div>';
+                        '</div>';
 
-                document.body.appendChild(modal);
+                    document.body.appendChild(modal);
 
-                var style = {
-                    base: {
-                        color: '#f3f3f6',
-                        fontFamily: "'Outfit', sans-serif",
-                        fontSmoothing: 'antialiased',
-                        fontSize: '16px',
-                        '::placeholder': {
-                            color: '#8e8e9f'
+                    var style = {
+                        base: {
+                            color: '#f3f3f6',
+                            fontFamily: "'Outfit', sans-serif",
+                            fontSmoothing: 'antialiased',
+                            fontSize: '16px',
+                            '::placeholder': {
+                                color: '#8e8e9f'
+                            }
+                        },
+                        invalid: {
+                            color: '#e65050',
+                            iconColor: '#e65050'
                         }
-                    },
-                    invalid: {
-                        color: '#e65050',
-                        iconColor: '#e65050'
-                    }
-                };
+                    };
 
-                var cardElement = elements.create('card', { style: style, hidePostalCode: true });
-                cardElement.mount('#stripe-card-element');
+                    var cardElement = elements.create('card', { style: style, hidePostalCode: true });
+                    cardElement.mount('#stripe-card-element');
 
-                // Close Modal
-                document.getElementById('stripe-modal-close').addEventListener('click', function() {
-                    document.body.removeChild(modal);
+                    // Close Modal
+                    document.getElementById('stripe-modal-close').addEventListener('click', function () {
+                        document.body.removeChild(modal);
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Odeslat poptávku';
+                    });
+
+                    // Form submit within modal
+                    var cardForm = document.getElementById('stripe-card-form');
+                    cardForm.addEventListener('submit', function (ev) {
+                        ev.preventDefault();
+                        var payBtn = document.getElementById('stripe-submit-payment');
+                        payBtn.disabled = true;
+                        payBtn.textContent = 'Zpracovávám platbu...';
+
+                        stripe.confirmCardPayment(data.clientSecret, {
+                            payment_method: {
+                                card: cardElement,
+                                billing_details: {
+                                    name: name,
+                                    email: email
+                                }
+                            }
+                        })
+                            .then(function (result) {
+                                if (result.error) {
+                                    document.getElementById('stripe-card-errors').textContent = result.error.message;
+                                    payBtn.disabled = false;
+                                    payBtn.textContent = 'Zaplatit a dokončit';
+                                } else {
+                                    if (result.paymentIntent.status === 'succeeded') {
+                                        document.body.removeChild(modal);
+                                        submitBtn.disabled = false;
+                                        submitBtn.textContent = 'Odeslat poptávku';
+
+                                        feedback.className = 'form-feedback success';
+                                        feedback.innerHTML = 'Děkujeme, ' + name + '! Objednávka byla úspěšně zaplacena. Potvrzení a fakturu obdržíte e-mailem.';
+
+                                        // Clear cart
+                                        form.reset();
+                                        cart = [];
+                                        saveCart();
+                                        updateCartUI();
+                                    }
+                                }
+                            });
+                    });
+                })
+                .catch(function (err) {
+                    console.error(err);
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Odeslat poptávku';
+                    feedback.className = 'form-feedback';
+                    feedback.style.color = 'var(--danger)';
+                    feedback.textContent = 'Nastala chyba při přípravě platby: ' + err.message;
                 });
-
-                // Form submit within modal
-                var cardForm = document.getElementById('stripe-card-form');
-                cardForm.addEventListener('submit', function(ev) {
-                    ev.preventDefault();
-                    var payBtn = document.getElementById('stripe-submit-payment');
-                    payBtn.disabled = true;
-                    payBtn.textContent = 'Zpracovávám platbu...';
-
-                    stripe.confirmCardPayment(data.clientSecret, {
-                        payment_method: {
-                            card: cardElement,
-                            billing_details: {
-                                name: name,
-                                email: email
-                            }
-                        }
-                    })
-                    .then(function(result) {
-                        if (result.error) {
-                            document.getElementById('stripe-card-errors').textContent = result.error.message;
-                            payBtn.disabled = false;
-                            payBtn.textContent = 'Zaplatit a dokončit';
-                        } else {
-                            if (result.paymentIntent.status === 'succeeded') {
-                                document.body.removeChild(modal);
-                                submitBtn.disabled = false;
-                                submitBtn.textContent = 'Odeslat poptávku';
-                                
-                                feedback.className = 'form-feedback success';
-                                feedback.innerHTML = 'Děkujeme, ' + name + '! Objednávka byla úspěšně zaplacena. Potvrzení a fakturu obdržíte e-mailem.';
-                                
-                                // Clear cart
-                                form.reset();
-                                cart = [];
-                                saveCart();
-                                updateCartUI();
-                            }
-                        }
-                    });
-                });
-            })
-            .catch(function(err) {
-                console.error(err);
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Odeslat poptávku';
-                feedback.className = 'form-feedback';
-                feedback.style.color = 'var(--danger)';
-                feedback.textContent = 'Nastala chyba při přípravě platby: ' + err.message;
-            });
         });
     }
 
     /* ── 3.5 DYNAMICKÉ NAČÍTÁNÍ PRODUKTŮ A BLOGU Z DATABÁZE ── */
     function loadProductsData() {
         fetch('/products.json')
-            .then(function(res) { return res.json(); })
-            .then(function(products) {
-                products.forEach(function(p) {
+            .then(function (res) { return res.json(); })
+            .then(function (products) {
+                products.forEach(function (p) {
                     var card = null;
                     if (p.id === 'kaleidoscope') card = document.getElementById('card-kaleidoscope');
                     else if (p.id === 'fog') card = document.getElementById('card-fog');
@@ -367,7 +423,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         // 4. AUTOMATICKÉ VYTVOŘENÍ GALERIE (Pokud má produkt víc fotek)
                         if (p.images && p.images.length > 1) {
                             var imgWrap = card.querySelector('.card-image-wrap');
-                            
+
                             // Smažeme případnou starou lištu miniatur, ať se neduplikuje
                             var oldGallery = card.querySelector('.product-thumb-gallery');
                             if (oldGallery) oldGallery.remove();
@@ -380,7 +436,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             galleryDiv.style.marginTop = '10px';
                             galleryDiv.style.overflowX = 'auto';
 
-                            p.images.forEach(function(imgSrc) {
+                            p.images.forEach(function (imgSrc) {
                                 var thumb = document.createElement('img');
                                 thumb.src = imgSrc;
                                 thumb.style.width = '45px';
@@ -389,9 +445,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                 thumb.style.borderRadius = '4px';
                                 thumb.style.cursor = 'pointer';
                                 thumb.style.border = '1px solid #22222a';
+                                thumb.loading = 'lazy';
 
                                 // Interaktivní proklik - klik na miniaturu změní hlavní velkou fotku
-                                thumb.addEventListener('click', function() {
+                                thumb.addEventListener('click', function () {
                                     imgEl.src = imgSrc;
                                     var btn = card.querySelector('.add-to-cart-btn');
                                     if (btn) btn.setAttribute('data-img', imgSrc);
@@ -409,7 +466,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             var priceVal = parseInt(p.price.replace(/[^0-9]/g, ''), 10) || 990;
                             btn.setAttribute('data-price', priceVal);
                             if (p.localImg) btn.setAttribute('data-img', p.localImg);
-                            
+
                             if (p.inStock === false) {
                                 btn.disabled = true;
                                 btn.textContent = 'Vyprodáno';
@@ -427,7 +484,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
             })
-            .catch(function(err) {
+            .catch(function (err) {
                 console.error('Failed to load products.json:', err);
             });
     }
@@ -435,9 +492,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Packeta Widget v6 picker
     var zasilkovnaBtn = document.getElementById('zasilkovna-trigger');
     if (zasilkovnaBtn) {
-        zasilkovnaBtn.addEventListener('click', function() {
+        zasilkovnaBtn.addEventListener('click', function () {
             var apiKey = 'a90886c33e8b0a9c'; // Demo key or project apiKey
-            Packeta.Widget.pick(apiKey, function(point) {
+            Packeta.Widget.pick(apiKey, function (point) {
                 if (point) {
                     document.getElementById('form-zasilkovna-id').value = point.id;
                     document.getElementById('form-zasilkovna').value = point.name + ', ' + point.street + ', ' + point.city;
@@ -450,34 +507,128 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // ── JOURNAL DETAIL MODAL LOGIC ──
+    var journalModal = document.getElementById('journal-modal');
+    var modalCloseBtn = document.getElementById('journal-modal-close');
+    var modalImg = document.getElementById('modal-article-img');
+    var modalMeta = document.getElementById('modal-article-meta');
+    var modalTitle = document.getElementById('modal-article-title');
+    var modalBody = document.getElementById('modal-article-body');
+
+    function openArticleModal(post) {
+        if (!journalModal) return;
+        modalImg.src = post.image || '';
+        modalImg.alt = post.title || '';
+        modalMeta.textContent = post.date || '';
+        modalTitle.textContent = post.title || '';
+        modalBody.innerHTML = post.text || ''; // Full HTML content!
+
+        journalModal.showModal();
+        document.body.style.overflow = 'hidden'; // block page scroll
+
+        // Přidání parametru do URL pro sdílení
+        if (window.history.pushState) {
+            var newUrl = new URL(window.location);
+            newUrl.searchParams.set('article', post.slug || post.id);
+            window.history.pushState({}, '', newUrl);
+        }
+    }
+
+    if (modalCloseBtn && journalModal) {
+        modalCloseBtn.addEventListener('click', function () {
+            journalModal.close();
+        });
+    }
+
+    if (journalModal) {
+        // Unblock scroll when modal closes
+        journalModal.addEventListener('close', function () {
+            document.body.style.overflow = '';
+
+            // Odstranění parametru article z URL při zavření
+            if (window.history.pushState) {
+                var newUrl = new URL(window.location);
+                newUrl.searchParams.delete('article');
+                window.history.pushState({}, '', newUrl);
+            }
+        });
+
+        // Fallback for browsers without closedby support
+        if (!('closedBy' in HTMLDialogElement.prototype)) {
+            journalModal.addEventListener('click', function (event) {
+                if (event.target !== journalModal) return;
+
+                var rect = journalModal.getBoundingClientRect();
+                var isDialogContent = (
+                    rect.top <= event.clientY &&
+                    event.clientY <= rect.top + rect.height &&
+                    rect.left <= event.clientX &&
+                    event.clientX <= rect.left + rect.width
+                );
+
+                if (!isDialogContent) {
+                    journalModal.close();
+                }
+            });
+        }
+    }
+
     function loadBlogPosts() {
         var grid = document.querySelector('.journal-grid');
         if (!grid) return;
 
         fetch('/.netlify/functions/blog')
-            .then(function(res) { return res.json(); })
-            .then(function(posts) {
+            .then(function (res) { return res.json(); })
+            .then(function (posts) {
                 if (!posts || posts.length === 0) return;
-                
+
                 grid.innerHTML = '';
-                posts.forEach(function(post) {
+                posts.forEach(function (post) {
+                    // Extract plain text excerpt from HTML
+                    var tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = post.text || '';
+                    var plainText = tempDiv.textContent || tempDiv.innerText || '';
+                    var excerpt = plainText;
+                    if (excerpt.length > 140) {
+                        excerpt = excerpt.substring(0, 137) + '...';
+                    }
+
                     var card = document.createElement('article');
                     card.className = 'journal-card';
                     card.id = 'article-' + post.id;
-                    card.innerHTML = 
+                    card.style.cursor = 'pointer'; // Make entire card look clickable
+                    card.innerHTML =
                         '<div class="journal-img-wrap">' +
-                            '<img src="' + post.image + '" alt="' + post.title + '" class="journal-img" onerror="this.src=\'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=600&q=80\'">' +
+                        '<img src="' + post.image + '" alt="' + post.title + '" class="journal-img" loading="lazy" onerror="this.src=\'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=600&q=80\'">' +
                         '</div>' +
                         '<div class="journal-content">' +
-                            '<span class="journal-meta">' + post.date + '</span>' +
-                            '<h3 class="journal-card-title">' + post.title + '</h3>' +
-                            '<p class="journal-excerpt">' + post.text + '</p>' +
-                            '<a href="#" class="read-more-link">Číst dále →</a>' +
+                        '<span class="journal-meta">' + post.date + '</span>' +
+                        '<h3 class="journal-card-title">' + post.title + '</h3>' +
+                        '<p class="journal-excerpt">' + excerpt + '</p>' +
+                        '<a href="#" class="read-more-link" onclick="event.preventDefault();">Číst dále →</a>' +
                         '</div>';
+
+                    // Open modal on card click
+                    card.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        openArticleModal(post);
+                    });
+
                     grid.appendChild(card);
                 });
+
+                // Otevření článku automaticky, pokud je v URL parametr
+                var urlParams = new URLSearchParams(window.location.search);
+                var articleParam = urlParams.get('article');
+                if (articleParam) {
+                    var postToOpen = posts.find(function (p) { return p.slug === articleParam || p.id === articleParam; });
+                    if (postToOpen) {
+                        // setTimeout zajišťuje, že se modal otevře až po správném vyrendrování
+                        setTimeout(function () { openArticleModal(postToOpen); }, 100);
+                    }
+                }
             })
-            .catch(function(err) {
+            .catch(function (err) {
                 console.error('Failed to load blog posts:', err);
             });
     }
@@ -502,14 +653,14 @@ document.addEventListener('DOMContentLoaded', function() {
         window.addEventListener('resize', resizeCanvas);
 
         // Trackování myši
-        canvas.addEventListener('mousemove', function(e) {
+        canvas.addEventListener('mousemove', function (e) {
             var rect = canvas.getBoundingClientRect();
             mouse.x = (e.clientX - rect.left) * (window.devicePixelRatio || 1);
             mouse.y = (e.clientY - rect.top) * (window.devicePixelRatio || 1);
             mouse.active = true;
         });
 
-        canvas.addEventListener('mouseleave', function() {
+        canvas.addEventListener('mouseleave', function () {
             mouse.active = false;
         });
 
@@ -530,7 +681,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Kreslení scény
         function drawScene() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
+
             var w = canvas.width;
             var h = canvas.height;
             var centerX = w / 2;
@@ -552,7 +703,7 @@ document.addEventListener('DOMContentLoaded', function() {
             ctx.lineTo(p2.x, p2.y);
             ctx.lineTo(p3.x, p3.y);
             ctx.closePath();
-            
+
             var prismGrad = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
             prismGrad.addColorStop(0, 'rgba(255, 255, 255, 0.25)');
             prismGrad.addColorStop(1, 'rgba(214, 140, 63, 0.05)');
@@ -581,7 +732,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'rgba(160, 80, 240, 0.65)'   // Fialová
             ];
 
-            colors.forEach(function(color, index) {
+            colors.forEach(function (color, index) {
                 var offset = (index - 2.5) * 12 * scale;
                 ctx.beginPath();
                 ctx.moveTo(centerX - 30 * scale, centerY - 10 * scale);
@@ -609,7 +760,7 @@ document.addEventListener('DOMContentLoaded', function() {
             ctx.fill();
 
             // Animování a kreslení prachových částic ve světle
-            particles.forEach(function(p) {
+            particles.forEach(function (p) {
                 p.x += p.speed;
                 p.y += Math.sin(p.x * 0.02) * 0.5 + p.angle;
 
@@ -621,7 +772,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Vykreslit částici
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                
+
                 // Částice svítí víc v oblasti spektra
                 if (p.x > centerX) {
                     ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
@@ -635,5 +786,327 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         drawScene();
+    }
+
+    /* ── 5. DETAILEM PRODUKTU DYNAMICKÝ KONTROLER (product.html) ── */
+    var productContentWrapper = document.getElementById('product-content-wrapper');
+    if (productContentWrapper) {
+        var urlParams = new URLSearchParams(window.location.search);
+        var productId = urlParams.get('id') || 'kaleidoscope'; // Výchozí pokud chybí
+
+        fetch('/products.json')
+            .then(function (res) { return res.json(); })
+            .then(function (products) {
+                var currentProduct = products.find(function (p) { return p.id === productId; });
+                if (!currentProduct) {
+                    productContentWrapper.innerHTML =
+                        '<div style="grid-column: 1 / -1; text-align: center; padding: 100px 0; color: var(--color-text-muted); font-family: var(--font-body);">' +
+                        '<h2>Omlouváme se, produkt nebyl nalezen.</h2>' +
+                        '<p style="margin-top: 10px;"><a href="index.html" class="back-link" style="color: var(--color-accent); font-weight: 800;">← Zpět na úvodní stranu</a></p>' +
+                        '</div>';
+                    return;
+                }
+
+                renderProductDetail(currentProduct);
+            })
+            .catch(function (err) {
+                console.error('Nepodařilo se načíst data produktu:', err);
+                productContentWrapper.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:100px 0; color: var(--color-text-muted);">Nepodařilo se načíst detail produktu. Zkuste to prosím znovu.</div>';
+            });
+    }
+
+    function renderProductDetail(product) {
+        var wrapper = document.getElementById('product-content-wrapper');
+        if (!wrapper) return;
+
+        // Nastavit název stránky a drobečkovou navigaci
+        document.title = product.name + ' — Premium Filtr | Fotofiltry.cz';
+        var breadcrumbCurrent = document.getElementById('breadcrumb-current');
+        if (breadcrumbCurrent) breadcrumbCurrent.textContent = product.name;
+
+        // Aktualizace SEO metadat (vyčištění HTML tagů pro čistý text)
+        var metaDesc = document.querySelector('meta[name="description"]');
+        var plainTextDesc = product.description.replace(/<[^>]+>/g, '').trim().substring(0, 155) + '...';
+        if (metaDesc) metaDesc.setAttribute('content', plainTextDesc);
+
+        // Helper funkce pro Open Graph tagy (sociální sítě)
+        function setMetaTag(attr, attrValue, content) {
+            var el = document.querySelector('meta[' + attr + '="' + attrValue + '"]');
+            if (!el) {
+                el = document.createElement('meta');
+                el.setAttribute(attr, attrValue);
+                document.head.appendChild(el);
+            }
+            el.setAttribute('content', content);
+        }
+
+        // Zajištění absolutní URL adresy pro obrázek (vyžadováno většinou sítí)
+        var ogImage = product.images && product.images.length > 0 ? product.images[0] : (product.localImg || '');
+        if (ogImage && !ogImage.startsWith('http')) ogImage = window.location.origin + '/' + ogImage;
+
+        setMetaTag('property', 'og:title', product.name + ' | Fotofiltry.cz');
+        setMetaTag('property', 'og:description', plainTextDesc);
+        setMetaTag('property', 'og:image', ogImage);
+        setMetaTag('property', 'og:url', window.location.href);
+
+        // Výchozí hodnoty stavu
+        var selectedVariant = product.variants && product.variants.length > 0 ? product.variants[0] : 'Classic';
+
+        // Najít první velikost, která je skladem, případně vzít první v poli
+        var selectedSizeObj = product.sizes && product.sizes.length > 0 ?
+            (product.sizes.find(function (s) { return s.stock > 0; }) || product.sizes[0]) :
+            { size: '77 mm', price: 990, stock: 5 };
+
+        var selectedSize = selectedSizeObj.size;
+        var selectedQuantity = 1;
+        var activeImage = product.images && product.images.length > 0 ? product.images[0] : (product.localImg || 'images/kaleidoscope.png');
+
+        // Sestavení galerie miniatur
+        var thumbsHtml = '';
+        if (product.images && product.images.length > 1) {
+            product.images.forEach(function (img, index) {
+                var activeClass = img === activeImage ? 'active' : '';
+                thumbsHtml += '<img src="' + img + '" alt="' + product.name + ' náhled ' + (index + 1) + '" class="product-detail-thumb ' + activeClass + '" data-img="' + img + '">';
+            });
+        }
+
+        // Sestavení výběru variant
+        var variantsHtml = '';
+        if (product.variants && product.variants.length > 0) {
+            product.variants.forEach(function (v, index) {
+                var activeClass = v === selectedVariant ? 'active' : '';
+                variantsHtml += '<button class="variant-pill ' + activeClass + '" data-variant="' + v + '">' + v + '</button>';
+            });
+        }
+
+        // Sestavení výběru velikostí
+        var sizesHtml = '';
+        if (product.sizes && product.sizes.length > 0) {
+            product.sizes.forEach(function (s) {
+                var activeClass = s.size === selectedSize ? 'active' : '';
+                var disabledClass = s.stock === 0 ? 'disabled' : '';
+                sizesHtml += '<button class="size-btn ' + activeClass + ' ' + disabledClass + '" data-size="' + s.size + '" data-price="' + s.price + '" data-stock="' + s.stock + '">' + s.size + '</button>';
+            });
+        }
+
+        var initialPriceText = selectedSizeObj.price.toLocaleString() + ' Kč';
+
+        var initialStockLabel = '';
+        var initialStockClass = '';
+        if (selectedSizeObj.stock > 3) {
+            initialStockLabel = 'Skladem (' + selectedSizeObj.stock + ' ks)';
+            initialStockClass = 'in-stock';
+        } else if (selectedSizeObj.stock > 0) {
+            initialStockLabel = 'Poslední kusy (' + selectedSizeObj.stock + ' ks)';
+            initialStockClass = 'low-stock';
+        } else {
+            initialStockLabel = 'Dočasně vyprodáno (Dostupné na objednání)';
+            initialStockClass = 'out-of-stock';
+        }
+
+        // Vložení kompletního HTML
+        wrapper.innerHTML =
+            '<!-- Left Visual Gallery -->' +
+            '<div class="product-detail-visual">' +
+            '<div class="product-detail-main-image-wrap">' +
+            '<img src="' + activeImage + '" alt="' + product.name + '" class="product-detail-main-img" id="main-detail-img" fetchpriority="high">' +
+            '</div>' +
+            '<div class="product-detail-thumbs" id="detail-thumbs-container">' +
+            thumbsHtml +
+            '</div>' +
+            '</div>' +
+
+            '<!-- Right Info Block -->' +
+            '<div class="product-detail-info">' +
+            '<div class="product-detail-badge">Prémiová kvalita</div>' +
+            '<span class="product-detail-category">Optické fotografické filtry</span>' +
+            '<h1 class="product-detail-title">' + product.name + '</h1>' +
+            '<div class="product-detail-price-wrap" id="detail-price">' + initialPriceText + '</div>' +
+
+            '<!-- Variant Selection -->' +
+            (product.variants && product.variants.length > 0 ?
+                '<div class="product-option-group">' +
+                '<span class="product-option-label">Volba verze / efektu:</span>' +
+                '<div class="product-variant-pills" id="detail-variants-container">' +
+                variantsHtml +
+                '</div>' +
+                '</div>' : '') +
+
+            '<!-- Size Selection -->' +
+            (product.sizes && product.sizes.length > 0 ?
+                '<div class="product-option-group">' +
+                '<span class="product-option-label">Velikost (průměr závitu objektivu):</span>' +
+                '<div class="product-size-grid" id="detail-sizes-container">' +
+                sizesHtml +
+                '</div>' +
+                '</div>' : '') +
+
+            '<!-- Stock Level -->' +
+            '<div class="stock-status-wrapper">' +
+            '<span class="stock-status-dot ' + initialStockClass + '" id="detail-stock-dot"></span>' +
+            '<span id="detail-stock-text" style="font-size: 13px; font-weight: 800;">' + initialStockLabel + '</span>' +
+            '</div>' +
+
+            '<!-- Quantity and Add to Cart -->' +
+            '<div class="product-add-to-cart-wrapper">' +
+            '<div class="quantity-stepper">' +
+            '<button class="stepper-btn" id="stepper-minus" style="font-weight:900;">-</button>' +
+            '<input type="text" class="stepper-input" id="stepper-val" value="1" readonly>' +
+            '<button class="stepper-btn" id="stepper-plus" style="font-weight:900;">+</button>' +
+            '</div>' +
+            '<button class="detail-add-btn ' + (selectedSizeObj.stock === 0 ? 'disabled' : '') + '" id="detail-add-to-cart-btn" ' + (selectedSizeObj.stock === 0 ? 'disabled' : '') + ' style="width:100%;">Do košíku</button>' +
+            '</div>' +
+
+            '<!-- Accordions for Details -->' +
+            '<div class="product-description-accordion">' +
+            '<div class="accordion-item active">' +
+            '<button class="accordion-trigger">O produktu <span>▲</span></button>' +
+            '<div class="accordion-content" style="max-height: 500px;">' +
+            product.description +
+            '</div>' +
+            '</div>' +
+            '<div class="accordion-item">' +
+            '<button class="accordion-trigger">Specifikace <span>▼</span></button>' +
+            '<div class="accordion-content">' +
+            '<p><ul>' +
+            '<li><strong>Sklo:</strong> Výběrové optické sklo Schott B270 s vysokou propustností světla</li>' +
+            '<li><strong>Obroučka:</strong> Nízkoprofilová (slim) hliníková slitina s jemným rýhováním a černým anodizováním</li>' +
+            '<li><strong>Konstrukce:</strong> Filtr je vsazen do otočné obroučky pro plynulé natáčení odlesků</li>' +
+            '<li><strong>Kompatibilita:</strong> Standardní vnitřní závit libovolného fotografického objektivu</li>' +
+            '</ul></p>' +
+            '</div>' +
+            '</div>' +
+            '<div class="accordion-item">' +
+            '<button class="accordion-trigger">Doprava a záruka <span>▼</span></button>' +
+            '<div class="accordion-content">' +
+            '<p>Standardní doprava přes Zásilkovnu (na pobočku i na adresu) do 2 pracovních dnů. Při nákupu nad 2 000 Kč je doprava zdarma. Záruka 2 roky na vady materiálu.</p>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>';
+
+        // ── AKCE A INTERAKCE NA DETAILU PRODUKTU ──
+
+        // 1. Přepínání miniatur v galerii
+        var mainImg = document.getElementById('main-detail-img');
+        var thumbs = wrapper.querySelectorAll('.product-detail-thumb');
+        thumbs.forEach(function (thumb) {
+            thumb.addEventListener('click', function () {
+                thumbs.forEach(function (t) { t.classList.remove('active'); });
+                this.classList.add('active');
+                var newImg = this.getAttribute('data-img');
+                mainImg.src = newImg;
+                activeImage = newImg;
+            });
+        });
+
+        // 2. Výběr varianty (pills)
+        var varPills = wrapper.querySelectorAll('.variant-pill');
+        varPills.forEach(function (pill) {
+            pill.addEventListener('click', function () {
+                varPills.forEach(function (p) { p.classList.remove('active'); });
+                this.classList.add('active');
+                selectedVariant = this.getAttribute('data-variant');
+            });
+        });
+
+        // 3. Výběr velikosti
+        var sizeBtns = wrapper.querySelectorAll('.size-btn');
+        var priceDisplay = document.getElementById('detail-price');
+        var stockDot = document.getElementById('detail-stock-dot');
+        var stockText = document.getElementById('detail-stock-text');
+        var addToCartBtn = document.getElementById('detail-add-to-cart-btn');
+
+        sizeBtns.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                if (this.classList.contains('disabled')) return;
+
+                sizeBtns.forEach(function (b) { b.classList.remove('active'); });
+                this.classList.add('active');
+
+                selectedSize = this.getAttribute('data-size');
+                var price = parseInt(this.getAttribute('data-price'), 10);
+                var stock = parseInt(this.getAttribute('data-stock'), 10);
+
+                priceDisplay.textContent = price.toLocaleString() + ' Kč';
+
+                // Update stavu skladu a tlačítka košíku
+                stockDot.className = 'stock-status-dot';
+                if (stock > 3) {
+                    stockText.textContent = 'Skladem (' + stock + ' ks)';
+                    stockDot.classList.add('in-stock');
+                    addToCartBtn.disabled = false;
+                    addToCartBtn.classList.remove('disabled');
+                } else if (stock > 0) {
+                    stockText.textContent = 'Poslední kusy (' + stock + ' ks)';
+                    stockDot.classList.add('low-stock');
+                    addToCartBtn.disabled = false;
+                    addToCartBtn.classList.remove('disabled');
+                } else {
+                    stockText.textContent = 'Dočasně vyprodáno (Dostupné na objednání)';
+                    stockDot.classList.add('out-of-stock');
+                    addToCartBtn.disabled = true;
+                    addToCartBtn.classList.add('disabled');
+                }
+            });
+        });
+
+        // 4. Stepper množství
+        var stepperMinus = document.getElementById('stepper-minus');
+        var stepperPlus = document.getElementById('stepper-plus');
+        var stepperVal = document.getElementById('stepper-val');
+
+        stepperMinus.addEventListener('click', function () {
+            if (selectedQuantity > 1) {
+                selectedQuantity--;
+                stepperVal.value = selectedQuantity;
+            }
+        });
+
+        stepperPlus.addEventListener('click', function () {
+            selectedQuantity++;
+            stepperVal.value = selectedQuantity;
+        });
+
+        // 5. Akordeony rozbalování detailů
+        var accordionItems = wrapper.querySelectorAll('.accordion-item');
+        accordionItems.forEach(function (item) {
+            var trigger = item.querySelector('.accordion-trigger');
+            var content = item.querySelector('.accordion-content');
+            var arrow = trigger.querySelector('span');
+
+            trigger.addEventListener('click', function () {
+                var isActive = item.classList.contains('active');
+
+                // Zavřít všechny ostatní
+                accordionItems.forEach(function (i) {
+                    i.classList.remove('active');
+                    i.querySelector('.accordion-content').style.maxHeight = null;
+                    i.querySelector('.accordion-trigger span').textContent = '▼';
+                });
+
+                if (!isActive) {
+                    item.classList.add('active');
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    arrow.textContent = '▲';
+                }
+            });
+        });
+
+        // 6. Klik na přidání do košíku
+        addToCartBtn.addEventListener('click', function () {
+            var currentSizeObj = product.sizes.find(function (s) { return s.size === selectedSize; }) || { price: 990 };
+            var currentPrice = currentSizeObj.price;
+
+            window.addToCart(
+                product.id,
+                product.name,
+                currentPrice,
+                activeImage,
+                selectedVariant,
+                selectedSize,
+                selectedQuantity
+            );
+        });
     }
 });

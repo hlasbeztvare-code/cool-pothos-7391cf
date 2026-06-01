@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nabídka | L-Code Dynamics</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            --bg-main: #0a0a0a;
+            --bg-card: #111111;
+            --bg-stripe: #161616;
+            --accent: #ff0033;
+            --accent-hover: #e6002e;
+            --text-main: #e5e5e5;
+            --text-muted: #888888;
+            --border-color: #222222;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #161616, #000000);
+            padding: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            letter-spacing: -0.5px;
+        }
+
+        .logo img {
+            filter: drop-shadow(0 0 8px rgba(255, 0, 51, 0.3));
+        }
+
+        .header-meta {
+            text-align: right;
+        }
+
+        .header-meta h1 {
+            font-size: 24px;
+            margin: 0;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            color: #fff;
+        }
+
+        .header-meta p {
+            margin: 5px 0 0 0;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 50px;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            letter-spacing: -0.3px;
+            color: #fff;
+        }
+
+        p {
+            line-height: 1.6;
+            color: #cccccc;
+        }
+
+        .total {
+            background: linear-gradient(90deg, var(--accent), #b30024);
+            color: white;
+            padding: 25px 30px;
+            font-size: 22px;
+            font-weight: 700;
+            text-align: center;
+            margin: 45px 0;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(255, 0, 51, 0.2);
+            letter-spacing: -0.5px;
+        }
+
+        .red {
+            color: var(--accent);
+        }
+
+        .footer {
+            padding: 50px;
+            background: #0a0a0a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .signature {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+                padding: 30px;
+            }
+
+            .header-meta {
+                text-align: center;
+            }
+
+            .content {
+                padding: 25px;
+            }
+
+            .footer {
+                flex-direction: column;
+                gap: 30px;
+                text-align: center;
+                padding: 35px;
+            }
+
+            .signature {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="header">
+            <div class="logo">
+                <img src="https://loga-umber.vercel.app/logomail.png" width="52" alt="L-Code Dynamics">
+                <span>L-Code Dynamics</span>
+            </div>
+            <div class="header-meta">
+                <h1>Cenová nabídka</h1>
+                <p>Pro klienta / Projekt</p>
+            </div>
+        </div>
+
+        <div class="content">
+
+            <div class="total">
+                CELKOVÁ INVESTICE PŘI KOMPLETNÍ REALIZACI — 290 000 až 520 000 Kč
+            </div>
+
+
+        </div>
+
+        <div class="footer">
+            <div>
+                <strong style="font-size: 18px; color: #fff;">L-Code Dynamics</strong><br>
+                <span style="color: var(--text-muted);">Jan Lančarič</span><br>
+                <span style="font-size: 13px; color: var(--text-muted);">Senior Developer & Founder</span><br>
+                <span class="red" style="font-weight: 600; display: inline-block; margin-top: 8px;">+420 608 960
+                    305</span>
+            </div>
+            <div class="signature">
+                <span style="color: var(--text-muted);">V Praze, dne 28. května 2026</span><br><br>
+                <span style="color: #fff;">__________________________</span><br>
+                <span style="font-size: 13px; display: inline-block; margin-top: 5px;">Jan Lančarič (v.r.)</span>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

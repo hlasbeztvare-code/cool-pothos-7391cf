@@ -18,17 +18,28 @@ exports.handler = async function(event, context) {
   }
 
   try {
-    const store = getStore({ name: 'eshop-data', consistency: 'strong' });
-    let posts = await store.get('blog', { type: 'json' });
+    let posts = null;
+    try {
+      const store = getStore({ name: 'eshop-data', consistency: 'strong' });
+      posts = await store.get('blog', { type: 'json' });
 
-    if (!posts) {
+      if (!posts) {
+        const blogPath = path.join(process.cwd(), 'blog.json');
+        if (fs.existsSync(blogPath)) {
+          posts = JSON.parse(fs.readFileSync(blogPath, 'utf8'));
+        } else {
+          posts = [];
+        }
+        await store.set('blog', JSON.stringify(posts));
+      }
+    } catch (blobError) {
+      console.warn('Netlify Blobs not available, falling back to local files:', blobError.message);
       const blogPath = path.join(process.cwd(), 'blog.json');
       if (fs.existsSync(blogPath)) {
         posts = JSON.parse(fs.readFileSync(blogPath, 'utf8'));
       } else {
         posts = [];
       }
-      await store.set('blog', JSON.stringify(posts));
     }
 
     return {
