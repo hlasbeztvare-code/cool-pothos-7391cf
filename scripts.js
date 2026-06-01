@@ -6,6 +6,44 @@
 document.addEventListener('DOMContentLoaded', function () {
     'use strict';
 
+    /* ── 0. HAMBURGER MENU & MOBILNÍ NAVIGACE ── */
+    var hamburgerBtn = document.getElementById('mobile-menu-trigger');
+    var mobileNav = document.getElementById('mobile-nav-overlay');
+    var mobileNavLinks = document.querySelectorAll('.mobile-nav-links a');
+
+    if (hamburgerBtn && mobileNav) {
+        function toggleMenu() {
+            hamburgerBtn.classList.toggle('is-active');
+            mobileNav.classList.toggle('is-active');
+            document.body.style.overflow = mobileNav.classList.contains('is-active') ? 'hidden' : '';
+        }
+        hamburgerBtn.addEventListener('click', toggleMenu);
+
+        mobileNavLinks.forEach(function (link) {
+            link.addEventListener('click', function () {
+                hamburgerBtn.classList.remove('is-active');
+                mobileNav.classList.remove('is-active');
+                document.body.style.overflow = '';
+            });
+        });
+    }
+
+    /* ── 0.5 SCROLL REVEAL ANIMACE ── */
+    var revealElements = document.querySelectorAll('.reveal-up');
+    if ('IntersectionObserver' in window) {
+        var revealObserver = new IntersectionObserver(function (entries, obs) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-revealed');
+                    obs.unobserve(entry.target);
+                }
+            });
+        }, { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.1 });
+        revealElements.forEach(function (el) { revealObserver.observe(el); });
+    } else {
+        revealElements.forEach(function (el) { el.classList.add('is-revealed'); });
+    }
+
     /* ── 1. DYNAMICKÝ ROK V PATIČCE ── */
     var yearEl = document.getElementById('current-year');
     if (yearEl) {
@@ -170,29 +208,6 @@ document.addEventListener('DOMContentLoaded', function () {
         updateCartUI();
     }
 
-    // Checkout button kliknutí
-    checkoutBtn.addEventListener('click', function () {
-        var itemsText = cart.map(function (item) {
-            return item.name + ' (' + item.quantity + 'x)';
-        }).join(', ');
-
-        var contactSection = document.getElementById('kontakt');
-        if (contactSection) {
-            toggleCart(false);
-            contactSection.scrollIntoView({ behavior: 'smooth' });
-
-            var msgInput = document.getElementById('form-message');
-            if (msgInput) {
-                msgInput.value = 'Mám zájem o rychlou objednávku těchto filtrů: ' + itemsText + '. Prosím o zaslání platebních údajů.';
-                msgInput.focus();
-            }
-        } else {
-            // Save checkout prefill and redirect to homepage contacts
-            localStorage.setItem('checkout_prefill_msg', 'Mám zájem o rychlou objednávku těchto filtrů: ' + itemsText + '. Prosím o zaslání platebních údajů.');
-            window.location.href = 'index.html#kontakt';
-        }
-    });
-
     // Prefill contact form from checkout redirect on page load
     if (window.location.hash === '#kontakt') {
         var prefillMsg = localStorage.getItem('checkout_prefill_msg');
@@ -213,47 +228,75 @@ document.addEventListener('DOMContentLoaded', function () {
     stripeScript.src = 'https://js.stripe.com/v3/';
     document.head.appendChild(stripeScript);
 
-    /* ── 3. OBJEDNÁVKOVÝ / KONTAKTNÍ FORMULÁŘ (STRIPE PLATBA) ── */
-    var form = document.getElementById('order-form');
-    var feedback = document.getElementById('form-feedback');
-
-    if (form) {
-        form.addEventListener('submit', function (e) {
+    /* ── 3. KONTAKTNÍ FORMULÁŘ (Úvodní strana) ── */
+    var contactForm = document.getElementById('order-form');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function (e) {
             e.preventDefault();
+            var btn = document.getElementById('form-submit');
+            var fb = document.getElementById('form-feedback');
+            btn.textContent = 'Odesílám...';
+            btn.disabled = true;
 
-            var name = document.getElementById('form-name').value;
-            var email = document.getElementById('form-email').value;
-            var phone = document.getElementById('form-phone').value;
-            var zasilkovnaId = document.getElementById('form-zasilkovna-id').value;
-            var message = document.getElementById('form-message').value;
-            var submitBtn = document.getElementById('form-submit');
+            // Prozatimní demo odeslání pro čistě kontaktní zprávy
+            setTimeout(function () {
+                fb.className = 'form-feedback success';
+                fb.textContent = 'Zpráva byla úspěšně odeslána. Brzy se vám ozveme.';
+                contactForm.reset();
+                btn.textContent = 'Odeslat poptávku';
+                btn.disabled = false;
+            }, 1000);
+        });
+    }
+
+    /* ── 3.5 CHECKOUT FORMULÁŘ PŘÍMO V KOŠÍKU (STRIPE PLATBA) ── */
+    var checkoutSubmitBtn = document.getElementById('cart-checkout-submit');
+    var checkoutFeedback = document.getElementById('checkout-feedback');
+
+    if (checkoutSubmitBtn) {
+        checkoutSubmitBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            var name = document.getElementById('checkout-name').value;
+            var email = document.getElementById('checkout-email').value;
+            var phone = document.getElementById('checkout-phone').value;
+            var zasilkovnaId = document.getElementById('checkout-zasilkovna-id').value;
+            var zasilkovnaName = document.getElementById('checkout-zasilkovna-name').value;
+            var termsChecked = document.getElementById('checkout-terms').checked;
 
             if (cart.length === 0) {
-                feedback.className = 'form-feedback';
-                feedback.style.color = 'var(--danger)';
-                feedback.textContent = 'Košík je prázdný. Přidejte prosím zboží do košíku.';
+                checkoutFeedback.className = 'form-feedback error';
+                checkoutFeedback.style.color = 'var(--danger)';
+                checkoutFeedback.textContent = 'Košík je prázdný.';
                 return;
             }
-
+            if (!name || !email || !phone) {
+                checkoutFeedback.className = 'form-feedback error';
+                checkoutFeedback.style.color = 'var(--danger)';
+                checkoutFeedback.textContent = 'Vyplňte prosím všechny kontaktní údaje.';
+                return;
+            }
             if (!zasilkovnaId) {
-                feedback.className = 'form-feedback error';
-                feedback.style.color = 'var(--danger)';
-                feedback.textContent = 'Vyberte prosím pobočku Zásilkovny.';
+                checkoutFeedback.className = 'form-feedback error';
+                checkoutFeedback.style.color = 'var(--danger)';
+                checkoutFeedback.textContent = 'Vyberte prosím pobočku Zásilkovny.';
+                return;
+            }
+            if (!termsChecked) {
+                checkoutFeedback.className = 'form-feedback error';
+                checkoutFeedback.style.color = 'var(--danger)';
+                checkoutFeedback.textContent = 'Musíte souhlasit s obchodními podmínkami.';
                 return;
             }
 
             // Lock submit button
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Připravuji platbu...';
-            feedback.className = 'form-feedback';
-            feedback.textContent = '';
+            checkoutSubmitBtn.disabled = true;
+            checkoutSubmitBtn.textContent = 'Připravuji platbu...';
+            checkoutFeedback.className = 'form-feedback';
+            checkoutFeedback.textContent = '';
 
             var checkoutItems = cart.map(function (item) {
                 return { id: item.id, quantity: item.quantity };
             });
-
-            var shippingField = document.getElementById('form-zasilkovna') || document.getElementById('form-address');
-            var shippingText = shippingField ? shippingField.value : ("Zásilkovna / Adresa: " + message);
 
             // Call Netlify checkout API
             fetch('/.netlify/functions/checkout', {
@@ -264,8 +307,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     email: email,
                     phone: phone,
                     zasilkovnaId: zasilkovnaId,
-                    message: message,
-                    shipping_info: shippingText,
+                    message: 'Objednávka z pokladny',
+                    shipping_info: zasilkovnaName,
                     items: checkoutItems
                 })
             })
@@ -338,8 +381,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Close Modal
                     document.getElementById('stripe-modal-close').addEventListener('click', function () {
                         document.body.removeChild(modal);
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Odeslat poptávku';
+                        checkoutSubmitBtn.disabled = false;
+                        checkoutSubmitBtn.textContent = 'Objednat a zaplatit';
                     });
 
                     // Form submit within modal
@@ -367,14 +410,14 @@ document.addEventListener('DOMContentLoaded', function () {
                                 } else {
                                     if (result.paymentIntent.status === 'succeeded') {
                                         document.body.removeChild(modal);
-                                        submitBtn.disabled = false;
-                                        submitBtn.textContent = 'Odeslat poptávku';
+                                        checkoutSubmitBtn.disabled = false;
+                                        checkoutSubmitBtn.textContent = 'Objednat a zaplatit';
 
-                                        feedback.className = 'form-feedback success';
-                                        feedback.innerHTML = 'Děkujeme, ' + name + '! Objednávka byla úspěšně zaplacena. Potvrzení a fakturu obdržíte e-mailem.';
+                                        checkoutFeedback.className = 'form-feedback success';
+                                        checkoutFeedback.innerHTML = 'Děkujeme, ' + name + '! Objednávka byla zaplacena. Potvrzení a fakturu obdržíte e-mailem.';
 
                                         // Clear cart
-                                        form.reset();
+                                        document.getElementById('cart-checkout-form').reset();
                                         cart = [];
                                         saveCart();
                                         updateCartUI();
@@ -385,11 +428,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .catch(function (err) {
                     console.error(err);
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Odeslat poptávku';
-                    feedback.className = 'form-feedback';
-                    feedback.style.color = 'var(--danger)';
-                    feedback.textContent = 'Nastala chyba při přípravě platby: ' + err.message;
+                    checkoutSubmitBtn.disabled = false;
+                    checkoutSubmitBtn.textContent = 'Objednat a zaplatit';
+                    checkoutFeedback.className = 'form-feedback error';
+                    checkoutFeedback.style.color = 'var(--danger)';
+                    checkoutFeedback.textContent = 'Chyba při přípravě platby: ' + err.message;
                 });
         });
     }
@@ -490,15 +533,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Packeta Widget v6 picker
-    var zasilkovnaBtn = document.getElementById('zasilkovna-trigger');
+    var zasilkovnaBtn = document.getElementById('zasilkovna-trigger-drawer');
     if (zasilkovnaBtn) {
         zasilkovnaBtn.addEventListener('click', function () {
             var apiKey = 'a90886c33e8b0a9c'; // Demo key or project apiKey
             Packeta.Widget.pick(apiKey, function (point) {
                 if (point) {
-                    document.getElementById('form-zasilkovna-id').value = point.id;
-                    document.getElementById('form-zasilkovna').value = point.name + ', ' + point.street + ', ' + point.city;
-                    document.getElementById('zasilkovna-info').textContent = 'Vybráno: ' + point.name + ' (' + point.street + ')';
+                    document.getElementById('checkout-zasilkovna-id').value = point.id;
+                    document.getElementById('checkout-zasilkovna-name').value = point.name + ', ' + point.street + ', ' + point.city;
+                    document.getElementById('zasilkovna-info-drawer').textContent = 'Vybráno: ' + point.name + ' (' + point.street + ')';
                 }
             }, {
                 country: 'cz',

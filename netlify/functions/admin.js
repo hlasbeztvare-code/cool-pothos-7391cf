@@ -8,7 +8,7 @@ function isAuthorized(event) {
   return authHeader === `Bearer ${expectedPassword}`;
 }
 
-exports.handler = async function(event, context) {
+exports.handler = async function (event, context) {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
@@ -52,7 +52,7 @@ exports.handler = async function(event, context) {
   if (event.httpMethod === 'POST' && action === 'update-product') {
     try {
       const body = JSON.parse(event.body || '{}');
-      const { id, price, inStock, description, image } = body;
+      const { id, price, inStock, variants, sizes, description, image } = body;
 
       if (!id) {
         return { statusCode: 400, headers, body: JSON.stringify({ error: 'Chybí ID produktu' }) };
@@ -77,6 +77,12 @@ exports.handler = async function(event, context) {
       }
       if (inStock !== undefined) {
         products[productIndex].inStock = !!inStock;
+      }
+      if (variants !== undefined) {
+        products[productIndex].variants = Array.isArray(variants) ? variants : [];
+      }
+      if (sizes !== undefined) {
+        products[productIndex].sizes = Array.isArray(sizes) ? sizes : [];
       }
       if (description !== undefined) {
         products[productIndex].description = description;

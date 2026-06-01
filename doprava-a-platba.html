@@ -4,9 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail produktu | Fotofiltry.cz</title>
-    <meta name="description"
-        content="Detail kreativního optického filtru s možností výběru rozměru a varianty. Navrženo pro nekompromisní filmový look.">
+    <title>Doprava a platba | Fotofiltry.cz</title>
+    <meta name="description" content="Informace o možnostech doručení a platby.">
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="images/favicon.ico">
@@ -19,24 +18,18 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
-
-    <!-- Packeta Widget v6 (Zásilkovna) -->
-    <script src="https://widget.packeta.com/v6/www/js/library.js"></script>
 </head>
 
 <body>
-
-    <!-- ── BACKGROUND refract grid ── -->
     <div class="bg-glow" id="bg-glow" aria-hidden="true"></div>
 
     <!-- ── HEADER ── -->
     <header class="main-header" id="header-section">
         <div class="header-container">
             <a href="index.html" class="brand-logo" id="logo-home">
-              ude s  <img src="Fotofiltry.cz LOGO, ICON/Fotofiltry.cz/Logo/Black logo/Black logo.png" alt="Fotofiltry.cz"
+                <img src="Fotofiltry.cz LOGO, ICON/Fotofiltry.cz/Logo/Black logo/Black logo.png" alt="Fotofiltry.cz"
                     style="max-height: 35px; width: auto; display: block;" fetchpriority="high">
             </a>
-
             <div class="header-actions">
                 <button class="cart-toggle-btn" id="cart-trigger" aria-label="Nákupní košík">
                     <span class="cart-icon">🛒</span>
@@ -61,22 +54,33 @@
         </nav>
     </div>
 
-    <!-- ── BREADCRUMBS & NAVIGATION ── -->
+    <!-- ── BREADCRUMBS ── -->
     <div class="breadcrumbs-container">
         <div class="section-container">
             <a href="index.html" class="back-link">← Zpět na úvodní stranu</a>
             <span class="breadcrumbs-separator">/</span>
-            <span id="breadcrumb-current" class="breadcrumbs-current">Kolekce</span>
+            <span class="breadcrumbs-current">Doprava a platba</span>
         </div>
     </div>
 
-    <!-- ── PRODUCT DETAIL CONTENT ── -->
+    <!-- ── CONTENT ── -->
     <main class="product-detail-section reveal-up">
-        <div class="section-container product-detail-layout" id="product-content-wrapper">
-            <!-- Dynamically populated by scripts.js, showing a loading skeleton first -->
-            <div style="grid-column: 1 / -1; text-align: center; padding: 100px 0; color: var(--color-text-muted);">
-                <div class="spinner" style="margin-bottom: 20px;"></div>
-                Načítám detaily produktu...
+        <div class="section-container"
+            style="max-width: 800px; margin: 0 auto; background-color: var(--color-card); border-radius: 24px; border: 1px solid rgba(var(--color-accent-rgb), 0.1); padding: 50px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);">
+            <h1
+                style="font-size: 32px; text-transform: uppercase; margin-bottom: 30px; border-bottom: 1px solid var(--color-border); padding-bottom: 20px;">
+                Doprava a platba</h1>
+            <div class="editorial-content">
+                <p><strong>Možnosti dopravy</strong><br>Vaše objednávky odesíláme výhradně prostřednictvím sítě
+                    <strong>Zásilkovna</strong>. Můžete si vybrat z tisíců výdejních míst v České republice i na
+                    Slovensku. Pro objednávky s hodnotou nad 2 000 Kč hradíme dopravu my.
+                </p>
+                <p><strong>Způsob platby</strong><br>Pro maximální bezpečnost a rychlost zpracování objednávky využíváme
+                    zabezpečenou online platební bránu <strong>Stripe</strong>. Platbu je možné provést libovolnou
+                    platební kartou. Ihned po úspěšném dokončení platby vám na e-mail zašleme potvrzení a daňový doklad.
+                </p>
+                <p><strong>Rychlost odeslání</strong><br>Většinu objednávek přijatých do 12:00 expedujeme ještě tentýž
+                    den. Průměrná doba doručení na vybrané výdejní místo Zásilkovny je 1–2 pracovní dny.</p>
             </div>
         </div>
     </main>
@@ -89,7 +93,6 @@
                     class="f-logo-img">
                 <p class="f-brand-tagline">Nekompromisní optická kvalita a jedinečný look pro moderní tvůrce.</p>
             </div>
-
             <div class="footer-col">
                 <h4>Kolekce</h4>
                 <a href="index.html#kolekce">Prism Series</a>
@@ -145,16 +148,13 @@
             </div>
 
             <div class="cart-items-list" id="cart-items-container">
-                <!-- Dynamically filled -->
                 <p class="cart-empty-message">Košík je prázdný.</p>
             </div>
-
             <div class="cart-drawer-footer" id="cart-footer">
                 <div class="cart-total-line">
                     <span>Celkem k úhradě:</span>
                     <strong id="cart-total-price">0 Kč</strong>
                 </div>
-
                 <div class="cart-checkout-form" id="cart-checkout-form"
                     style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
                     <input type="text" id="checkout-name" placeholder="Jméno a příjmení" required class="drawer-input">
@@ -178,23 +178,6 @@
             </div>
         </div>
     </div>
-
-    <!-- ── JOURNAL POST DETAIL MODAL (Added for shared components header/footer compatibility) ── -->
-    <dialog id="journal-modal" class="premium-dialog" closedby="any" aria-labelledby="modal-article-title">
-        <div class="dialog-content-wrapper">
-            <button class="dialog-close-btn" id="journal-modal-close" aria-label="Zavřít článek">×</button>
-            <div class="dialog-header-image-wrap">
-                <img id="modal-article-img" src="" alt="" class="dialog-header-img">
-            </div>
-            <div class="dialog-body-content">
-                <span id="modal-article-meta" class="journal-meta"></span>
-                <h2 id="modal-article-title" class="dialog-article-title"></h2>
-                <div id="modal-article-body" class="dialog-article-body"></div>
-            </div>
-        </div>
-    </dialog>
-
-    <!-- Custom Script -->
     <script src="scripts.js"></script>
 </body>
 
