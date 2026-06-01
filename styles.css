@@ -130,6 +130,7 @@ a {
     font-family: var(--font-title);
     display: flex;
     align-items: center;
+    gap: 10px;
 }
 
 .brand-logo b {
@@ -139,6 +140,18 @@ a {
 .nav-menu {
     display: flex;
     gap: 32px;
+}
+
+/* ── ANIMACE ORNAMENTU LOGA ── */
+@keyframes spin-ornament {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.spinning-ornament {
+    animation: spin-ornament 15s linear infinite;
+    transform-origin: center center;
+    will-change: transform;
 }
 
 .nav-link {
@@ -761,12 +774,30 @@ a {
     max-width: 320px;
 }
 
+.footer-brand-flex {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.footer-brand-flex .f-logo-text,
+.footer-brand-flex .f-logo-img {
+    margin-bottom: 0;
+}
+
 .f-logo-text {
     font-family: var(--font-title);
     font-size: 32px;
     font-weight: 800;
-    margin-bottom: 20px;
     letter-spacing: -0.04em;
+}
+
+.f-logo-img {
+    max-height: 45px;
+    width: auto;
+    margin-bottom: 20px;
+    display: block;
 }
 
 .f-logo-text b {
@@ -1349,8 +1380,95 @@ a {
     box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.15);
 }
 
+/* ── HIGH-TICKET EDITORIAL SECTION ── */
+.premium-editorial-section {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    padding: 0 10px;
+}
+
+.editorial-block {
+    border-top: 1px solid rgba(var(--color-accent-rgb), 0.15);
+    padding-top: 30px;
+}
+
+.editorial-title {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-text-main);
+    margin-bottom: 24px;
+}
+
+.editorial-content {
+    font-size: 15px;
+    line-height: 1.9;
+    color: var(--color-text-muted);
+}
+
+.editorial-content p {
+    margin-bottom: 20px;
+}
+
+.editorial-content ul {
+    margin-bottom: 20px;
+    padding-left: 20px;
+}
+
+.editorial-content li {
+    margin-bottom: 10px;
+}
+
+.editorial-content b,
+.editorial-content strong {
+    color: var(--color-text-main);
+    font-weight: 700;
+}
+
+.premium-specs-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.premium-specs-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(var(--color-border-rgb), 0.4);
+    font-size: 14px;
+}
+
+.premium-specs-list li span {
+    color: var(--color-text-muted);
+}
+
+.premium-specs-list li strong {
+    color: var(--color-text-main);
+    font-weight: 600;
+    text-align: right;
+    max-width: 60%;
+}
+
+.shipping-block p {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--color-text-muted);
+}
+
+.shipping-block strong {
+    color: var(--color-text-main);
+}
+
 /* Right Column: Details Info */
 .product-detail-info {
+    position: sticky;
+    top: 120px;
+    /* Accounts for header */
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -1589,64 +1707,6 @@ a {
     background-color: var(--color-border);
     color: var(--color-text-subtle);
     cursor: not-allowed;
-}
-
-/* Accordion Accordion (Description/Tabs) */
-.product-description-accordion {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 10px;
-}
-
-.accordion-item {
-    border-bottom: 1px solid rgba(var(--color-accent-rgb), 0.1);
-    padding-bottom: 14px;
-}
-
-.accordion-trigger {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    background: none;
-    border: none;
-    padding: 6px 0;
-    font-family: var(--font-title);
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--color-text-main);
-    cursor: pointer;
-    text-align: left;
-}
-
-.accordion-trigger span {
-    transition: transform 0.3s ease;
-}
-
-.accordion-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    font-size: 13px;
-    line-height: 1.7;
-    color: var(--color-text-muted);
-}
-
-.accordion-content p {
-    padding-top: 12px;
-    margin-bottom: 10px;
-}
-
-.accordion-content ul {
-    padding-left: 20px;
-    padding-top: 8px;
-}
-
-.accordion-content li {
-    margin-bottom: 6px;
 }
 
 /* Spinner indicator */

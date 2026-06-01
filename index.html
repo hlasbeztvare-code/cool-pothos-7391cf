@@ -32,10 +32,11 @@
     <header class="main-header" id="header-section">
         <div class="header-container">
             <a href="#" class="brand-logo" id="logo-home">
-                <img src="images/logo.png" alt="fotofiltry.cz" class="brand-logo-img"
-                    onerror="this.style.display='none'; document.getElementById('logo-text-fallback').style.display='inline';"
-                    style="max-height: 40px; width: auto; display: block;" fetchpriority="high">
-                <span class="logo-text" id="logo-text-fallback" style="display: none;">foto<b>filtr</b>y.cz</span>
+                <!-- Samostatný ornament pro rotaci -->
+                <img src="images/ornament.png" alt="" class="spinning-ornament"
+                    style="max-height: 35px; width: auto; display: block;" fetchpriority="high"
+                    onerror="this.style.display='none'">
+                <span class="logo-text">foto<b>filtr</b>y.cz</span>
             </a>
 
             <nav class="nav-menu" aria-label="Hlavní navigace" id="main-navigation">
@@ -294,7 +295,11 @@
     <footer class="main-footer" role="contentinfo">
         <div class="footer-container">
             <div class="footer-brand">
-                <div class="f-logo-text">foto<b>filtr</b>y.cz</div>
+                <div class="footer-brand-flex">
+                    <img src="images/ornament.png" alt="" class="f-logo-img spinning-ornament"
+                        onerror="this.style.display='none'">
+                    <div class="f-logo-text">foto<b>filtr</b>y.cz</div>
+                </div>
                 <p class="f-brand-tagline">Nekompromisní optická kvalita a jedinečný look pro moderní tvůrce.</p>
             </div>
 

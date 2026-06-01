@@ -914,6 +914,27 @@ document.addEventListener('DOMContentLoaded', function () {
             '<div class="product-detail-thumbs" id="detail-thumbs-container">' +
             thumbsHtml +
             '</div>' +
+
+            '<!-- Premium Editorial Section (High-Ticket) -->' +
+            '<div class="premium-editorial-section">' +
+            '<div class="editorial-block">' +
+            '<h3 class="editorial-title">Příběh produktu</h3>' +
+            '<div class="editorial-content">' + product.description + '</div>' +
+            '</div>' +
+            '<div class="editorial-block">' +
+            '<h3 class="editorial-title">Technická specifikace</h3>' +
+            '<ul class="premium-specs-list">' +
+            '<li><span>Optické sklo</span><strong>Schott B270 (vysoká propustnost)</strong></li>' +
+            '<li><span>Konstrukce</span><strong>Slim hliníková slitina, anodizováno</strong></li>' +
+            '<li><span>Mechanika</span><strong>Otočná obroučka pro plynulé natáčení</strong></li>' +
+            '<li><span>Závit</span><strong>Standardní vnitřní fotografický</strong></li>' +
+            '</ul>' +
+            '</div>' +
+            '<div class="editorial-block shipping-block">' +
+            '<h3 class="editorial-title">Doprava a servis</h3>' +
+            '<p>Každý filtr je ručně kontrolován před odesláním. Odesíláme expresně přes Zásilkovnu. <strong>Doprava zdarma nad 2 000 Kč.</strong> Součástí je prémiové balení a dvouletá záruka.</p>' +
+            '</div>' +
+            '</div>' +
             '</div>' +
 
             '<!-- Right Info Block -->' +
@@ -955,33 +976,6 @@ document.addEventListener('DOMContentLoaded', function () {
             '<button class="stepper-btn" id="stepper-plus" style="font-weight:900;">+</button>' +
             '</div>' +
             '<button class="detail-add-btn ' + (selectedSizeObj.stock === 0 ? 'disabled' : '') + '" id="detail-add-to-cart-btn" ' + (selectedSizeObj.stock === 0 ? 'disabled' : '') + ' style="width:100%;">Do košíku</button>' +
-            '</div>' +
-
-            '<!-- Accordions for Details -->' +
-            '<div class="product-description-accordion">' +
-            '<div class="accordion-item active">' +
-            '<button class="accordion-trigger">O produktu <span>▲</span></button>' +
-            '<div class="accordion-content" style="max-height: 500px;">' +
-            product.description +
-            '</div>' +
-            '</div>' +
-            '<div class="accordion-item">' +
-            '<button class="accordion-trigger">Specifikace <span>▼</span></button>' +
-            '<div class="accordion-content">' +
-            '<p><ul>' +
-            '<li><strong>Sklo:</strong> Výběrové optické sklo Schott B270 s vysokou propustností světla</li>' +
-            '<li><strong>Obroučka:</strong> Nízkoprofilová (slim) hliníková slitina s jemným rýhováním a černým anodizováním</li>' +
-            '<li><strong>Konstrukce:</strong> Filtr je vsazen do otočné obroučky pro plynulé natáčení odlesků</li>' +
-            '<li><strong>Kompatibilita:</strong> Standardní vnitřní závit libovolného fotografického objektivu</li>' +
-            '</ul></p>' +
-            '</div>' +
-            '</div>' +
-            '<div class="accordion-item">' +
-            '<button class="accordion-trigger">Doprava a záruka <span>▼</span></button>' +
-            '<div class="accordion-content">' +
-            '<p>Standardní doprava přes Zásilkovnu (na pobočku i na adresu) do 2 pracovních dnů. Při nákupu nad 2 000 Kč je doprava zdarma. Záruka 2 roky na vady materiálu.</p>' +
-            '</div>' +
-            '</div>' +
             '</div>' +
             '</div>';
 
@@ -1066,31 +1060,6 @@ document.addEventListener('DOMContentLoaded', function () {
         stepperPlus.addEventListener('click', function () {
             selectedQuantity++;
             stepperVal.value = selectedQuantity;
-        });
-
-        // 5. Akordeony rozbalování detailů
-        var accordionItems = wrapper.querySelectorAll('.accordion-item');
-        accordionItems.forEach(function (item) {
-            var trigger = item.querySelector('.accordion-trigger');
-            var content = item.querySelector('.accordion-content');
-            var arrow = trigger.querySelector('span');
-
-            trigger.addEventListener('click', function () {
-                var isActive = item.classList.contains('active');
-
-                // Zavřít všechny ostatní
-                accordionItems.forEach(function (i) {
-                    i.classList.remove('active');
-                    i.querySelector('.accordion-content').style.maxHeight = null;
-                    i.querySelector('.accordion-trigger span').textContent = '▼';
-                });
-
-                if (!isActive) {
-                    item.classList.add('active');
-                    content.style.maxHeight = content.scrollHeight + 'px';
-                    arrow.textContent = '▲';
-                }
-            });
         });
 
         // 6. Klik na přidání do košíku
