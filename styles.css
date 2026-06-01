@@ -46,6 +46,7 @@
 
 html {
     scroll-behavior: smooth;
+    scroll-padding-top: 100px;
     background-color: var(--color-bg);
 }
 
@@ -120,8 +121,8 @@ a {
     padding: 20px 24px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
     align-items: flex-start;
+    gap: 40px;
 }
 
 .brand-logo {
@@ -134,17 +135,30 @@ a {
     gap: 10px;
 }
 
+.brand-logo img {
+    max-height: 50px !important;
+    width: auto;
+}
+
 .brand-logo b {
     color: var(--color-accent);
 }
 
-.nav-menu {
+/* ── DESKTOP NAVIGACE (pevná vpravo, vertikální) ── */
+.desktop-nav {
     display: flex;
-    gap: 32px;
     flex-direction: column;
     align-items: flex-end;
+    gap: 2px;
     margin-left: auto;
-    margin-right: 40px;
+    padding-top: 2px;
+}
+
+/* Skrýt desktop nav na mobilu */
+@media (max-width: 768px) {
+    .desktop-nav {
+        display: none;
+    }
 }
 
 /* ── ANIMACE ORNAMENTU LOGA ── */
@@ -165,23 +179,38 @@ a {
 }
 
 .nav-link {
-    font-size: 13px;
     font-family: var(--font-title);
-    font-size: 64px;
+    font-size: 28px;
     font-weight: 800;
-    letter-spacing: 0.25em;
-    line-height: 0.95;
     letter-spacing: -0.02em;
+    line-height: 1.05;
     text-transform: uppercase;
-    color: var(--color-text-muted);
     color: var(--color-text-main);
+    position: relative;
+    display: inline-block;
+    transition: var(--transition-smooth);
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    right: 0;
+    width: 0;
+    height: 1.5px;
+    background-color: var(--color-accent);
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .nav-link:hover {
-    color: var(--color-text-main);
-    letter-spacing: 0.28em;
     color: var(--color-accent);
-    text-shadow: 0 0 40px rgba(var(--color-accent-rgb), 0.15);
+    text-shadow: 0 0 30px rgba(var(--color-accent-rgb), 0.12);
+}
+
+.nav-link:hover::after {
+    width: 100%;
+    left: 0;
+    right: auto;
 }
 
 .header-actions {
@@ -510,31 +539,41 @@ a {
 }
 
 .product-card {
-    background-color: var(--color-card);
-    border-radius: 24px;
-    border: 1px solid rgba(var(--color-accent-rgb), 0.1);
-    padding: 24px;
+    border-radius: 0;
+    border: none;
+    background: transparent;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    box-shadow: none;
     transition: var(--transition-smooth);
     cursor: pointer;
 }
 
 .product-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(var(--color-accent-rgb), 0.06);
-    border-color: rgba(var(--color-accent-rgb), 0.3);
+    transform: translateY(-8px);
 }
 
 .card-image-wrap {
     width: 100%;
     aspect-ratio: 4 / 3;
-    border-radius: 16px;
+    border-radius: 20px;
     overflow: hidden;
     position: relative;
     background-color: #ede6d8;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
+    box-shadow:
+        0 4px 6px rgba(0,0,0,0.04),
+        0 12px 40px rgba(0,0,0,0.08),
+        0 30px 80px rgba(0,0,0,0.05);
+    transition: box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.product-card:hover .card-image-wrap {
+    box-shadow:
+        0 8px 12px rgba(0,0,0,0.06),
+        0 24px 60px rgba(0,0,0,0.12),
+        0 50px 120px rgba(0,0,0,0.07);
 }
 
 .product-img {
@@ -552,6 +591,7 @@ a {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    padding: 0 4px;
 }
 
 .card-badge {
@@ -578,16 +618,18 @@ a {
 }
 
 .product-desc {
-    font-size: 15px;
-    color: #FF3333;
-    line-height: 1.6;
+    font-size: 14px;
+    color: var(--color-text-muted);
+    line-height: 1.75;
     margin-bottom: 24px;
     display: -webkit-box;
-    -webkit-line-clamp: 5;
-    line-clamp: 5;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-style: italic;
+    letter-spacing: 0.01em;
 }
 
 .product-bottom {
@@ -1037,7 +1079,7 @@ a {
 }
 
 .f-logo-img {
-    max-height: 40px;
+    max-height: 60px;
     width: auto;
     margin-bottom: 20px;
     display: block;
@@ -1871,28 +1913,28 @@ a {
 .product-detail-info {
     position: sticky;
     top: 120px;
-    /* Accounts for header */
     display: flex;
     flex-direction: column;
     gap: 24px;
-    background-color: var(--color-card);
-    border-radius: 24px;
-    border: 1px solid rgba(var(--color-accent-rgb), 0.1);
-    padding: 40px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+    background: transparent;
+    border-radius: 0;
+    border: none;
+    padding: 0;
+    box-shadow: none;
 }
 
 .product-detail-badge {
     align-self: flex-start;
-    background-color: rgba(var(--color-accent-rgb), 0.1);
+    background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.15), rgba(var(--color-accent-rgb), 0.06));
     color: var(--color-accent);
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.15em;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
-    padding: 6px 14px;
+    padding: 7px 16px;
     border-radius: 20px;
-    border: 1px solid rgba(var(--color-accent-rgb), 0.2);
+    border: 1px solid rgba(var(--color-accent-rgb), 0.25);
+    box-shadow: 0 2px 8px rgba(var(--color-accent-rgb), 0.1);
 }
 
 .product-detail-category {
@@ -1904,19 +1946,25 @@ a {
 }
 
 .product-detail-title {
-    font-size: 38px;
+    font-size: 40px;
     text-transform: uppercase;
-    line-height: 1.1;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
     margin: -8px 0 0 0;
+    background: linear-gradient(135deg, var(--color-text-main) 60%, rgba(var(--color-accent-rgb), 0.7) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .product-detail-price-wrap {
-    font-size: 32px;
+    font-size: 34px;
     font-weight: 900;
     color: var(--color-text-main);
     font-family: var(--font-title);
-    border-bottom: 1px solid var(--color-border);
-    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(var(--color-accent-rgb), 0.15);
+    padding-bottom: 22px;
+    -webkit-text-fill-color: var(--color-text-main);
 }
 
 /* Option Groups */
