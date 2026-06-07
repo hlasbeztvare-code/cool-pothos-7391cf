@@ -18,157 +18,79 @@
         rel="stylesheet">
 
     <!-- Link to custom styles -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=2">
     <!-- Packeta Widget v6 -->
     <script src="https://widget.packeta.com/v6/www/js/library.js"></script>
 </head>
 
 <body>
 
-    <!-- ── BACKGROUND refract grid ── -->
-    <div class="bg-glow" id="bg-glow" aria-hidden="true"></div>
+    
 
-    <!-- ── HEADER ── -->
-    <header class="main-header" id="header-section">
-        <div class="header-container">
-            <a href="index.html" class="brand-logo" id="logo-home">
-                <img src="Fotofiltry.cz LOGO, ICON/Fotofiltry.cz/Logo/Black logo/Black logo.png" alt="Fotofiltry.cz"
-                    style="width: auto; display: block;" fetchpriority="high">
-            </a>
 
-            <!-- Desktop Navigation -->
-            <nav class="desktop-nav" aria-label="Hlavní navigace">
-                <a href="#kolekce" class="nav-link">Kolekce</a>
-                <a href="#galerie" class="nav-link">Galerie</a>
-                <a href="#o-nas" class="nav-link">O nás</a>
-                <a href="#journal" class="nav-link">Journal</a>
-                <a href="#kontakt" class="nav-link">Kontakt</a>
-            </nav>
-
-            <div class="header-actions">
-                <button class="cart-toggle-btn" id="cart-trigger" aria-label="Nákupní košík">
-                    <span class="cart-icon">🛒</span>
-                    <span class="cart-count" id="cart-counter">0</span>
-                </button>
-                <button class="hamburger-btn" id="mobile-menu-trigger" aria-label="Menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- ── MOBILE NAV OVERLAY ── -->
-    <div class="mobile-nav-overlay" id="mobile-nav-overlay">
-        <nav class="mobile-nav-links">
-            <a href="index.html#kolekce">Kolekce</a>
-            <a href="index.html#galerie">Galerie</a>
-            <a href="index.html#o-nas">O nás</a>
-            <a href="index.html#journal">Journal</a>
-            <a href="index.html#kontakt">Kontakt</a>
-        </nav>
-    </div>
-
-    <!-- ── HERO SECTION ── -->
-    <section class="hero-section" id="hero">
-        <div class="hero-container">
-            <div class="hero-content reveal-up">
-                <h1 class="hero-title">Vidět svět<br><span class="accent-glow">jinak.</span></h1>
-                <p class="hero-subtitle">Prémiové optické filtry navržené pro tvůrce, kteří odmítají průměrnost.
-                    Dodejte
-                    svým snímkům filmovou atmosféru přímo na snímač.</p>
-                <div class="hero-buttons">
-                    <a href="#kolekce" class="cta-button primary-cta" id="cta-explore">Prohlédnout kolekce</a>
-                    <a href="#o-nas" class="cta-button secondary-cta" id="cta-about">Náš příběh</a>
-                </div>
-            </div>
-
-            <div class="hero-visual reveal-up delay-1">
-                <div class="glass-prism-container">
-                    <canvas id="prism-canvas"></canvas>
-                    <div class="prism-overlay-lens"></div>
-                </div>
-            </div>
+    
         </div>
     </section>
 
-    <!-- ── PRODUCT SECTION (KOLEKCE) ── -->
-    <section class="products-section" id="kolekce">
+    <!-- ── PRODUCT SECTION (MUSEUM RELICS) ── -->
+    <section class="products-section rotary-section relic-museum-section" id="kolekce">
         <div class="section-container">
             <div class="section-header reveal-up">
-                <h2 class="section-title">Kreativní skla</h2>
-                <p class="section-subtitle">Vyberte si svůj look. Každý filtr ručně brousíme z nejčistšího optického
-                    skla.</p>
+                <span class="sub-label">SBÍRKA ARTEFAKTŮ</span>
+                <h2 class="section-title tw-text">Kolekce Relikvií</h2>
             </div>
-
-            <div class="products-grid" id="products-listing">
-                <!-- Product 1: KALEIDOSKOP -->
-                <div class="product-card" id="card-kaleidoscope">
-                    <a href="product.html?id=kaleidoscope" class="product-card-link"
-                        style="display: block; color: inherit; text-decoration: none;">
-                        <div class="card-image-wrap">
-                            <img src="images/kaleidoscope.png" alt="KALEIDOSKOP Filter" class="product-img"
-                                onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80'"
-                                loading="lazy">
-                            <div class="card-badge">Bestseller</div>
-                        </div>
-                    </a>
-                    <div class="card-info">
-                        <h3 class="product-name"><a href="product.html?id=kaleidoscope">Kaleidoskop Filter</a></h3>
-                        <p class="product-desc">Geometrická exploze obrazu pro odvážnou tvorbu 💎 Tento filtr
-                            využívá
-                            precizně broušené optické sklo s několika plochami pod různými úhly.</p>
-                        <div class="product-bottom">
-                            <span class="product-price">990 Kč</span>
-                            <button class="add-to-cart-btn" data-id="kaleidoscope" data-name="Kaleidoskop Filter"
-                                data-price="990" data-img="images/kaleidoscope.png">Do košíku</button>
+            
+            <div class="relic-grid">
+                <!-- Relic 1: KALEIDOSCOPE -->
+                <div class="relic-card reveal-up delay-1">
+                    <div class="relic-frame">
+                        <img src="images/kaleidoscope.png" alt="Kaleidoskop" class="relic-img">
+                        <div class="relic-glass-glare"></div>
+                    </div>
+                    <div class="relic-info">
+                        <div class="relic-seal"></div>
+                        <h3 class="relic-title tw-text">Kaleidoskop</h3>
+                        <p class="relic-desc tw-text">Geometrická exploze obrazu pro odvážnou tvorbu. Dodejte snímkům hypnotickou texturu plnou odlesků.</p>
+                        <div class="relic-actions">
+                            <span class="price">990 Kč</span>
+                            <button class="add-to-cart-btn" data-id="kaleidoscope" data-name="Kaleidoskop Filter" data-price="990" data-img="images/kaledo_transparent.png">Získat artefakt</button>
+                            <a href="product.html?id=kaleidoscope" class="detail-link">Prozkoumat relikvii →</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Product 2: FOG -->
-                <div class="product-card" id="card-fog">
-                    <a href="product.html?id=fog" class="product-card-link"
-                        style="display: block; color: inherit; text-decoration: none;">
-                        <div class="card-image-wrap">
-                            <img src="images/fog.png" alt="FOG Filter" class="product-img"
-                                onerror="this.src='https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=600&q=80'"
-                                loading="lazy">
-                            <div class="card-badge">Popular</div>
-                        </div>
-                    </a>
-                    <div class="card-info">
-                        <h3 class="product-name"><a href="product.html?id=fog">Fog Filter</a></h3>
-                        <p class="product-desc">✨ Objevte kouzlo filmové atmosféry. Toužíte do svých snímků vnést
-                            nefalšovanou snovou atmosféru, zjemnit kontrast a vyhladit pleťovku?</p>
-                        <div class="product-bottom">
-                            <span class="product-price">990 Kč</span>
-                            <button class="add-to-cart-btn" data-id="fog" data-name="Fog Filter" data-price="990"
-                                data-img="images/fog.png">Do košíku</button>
+                <!-- Relic 2: FOG -->
+                <div class="relic-card reveal-up delay-2">
+                    <div class="relic-frame">
+                        <img src="images/fog.png" alt="Fog" class="relic-img">
+                        <div class="relic-glass-glare"></div>
+                    </div>
+                    <div class="relic-info">
+                        <div class="relic-seal"></div>
+                        <h3 class="relic-title tw-text">Fog</h3>
+                        <p class="relic-desc tw-text">Zjemněte kontrast, vyhlaďte pleťovku a přineste na plátno nefalšovanou filmovou snovou atmosféru.</p>
+                        <div class="relic-actions">
+                            <span class="price">990 Kč</span>
+                            <button class="add-to-cart-btn" data-id="fog" data-name="Fog Filter" data-price="990" data-img="images/fog_transparent.png">Získat artefakt</button>
+                            <a href="product.html?id=fog" class="detail-link">Prozkoumat relikvii →</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Product 3: HALO -->
-                <div class="product-card" id="card-halo">
-                    <a href="product.html?id=halo" class="product-card-link"
-                        style="display: block; color: inherit; text-decoration: none;">
-                        <div class="card-image-wrap">
-                            <img src="images/halo.jpg" alt="HALO Filter" class="product-img"
-                                onerror="this.src='https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=600&q=80'"
-                                loading="lazy">
-                            <div class="card-badge">Exclusive</div>
-                        </div>
-                    </a>
-                    <div class="card-info">
-                        <h3 class="product-name"><a href="product.html?id=halo">Halo Filter</a></h3>
-                        <p class="product-desc">Magický prstenec světla, který izoluje váš objekt 🎞️ Tento filtr
-                            využívá speciálně broušené optické sklo s radiálními fazetami.</p>
-                        <div class="product-bottom">
-                            <span class="product-price">990 Kč</span>
-                            <button class="add-to-cart-btn" data-id="halo" data-name="Halo Filter" data-price="990"
-                                data-img="images/halo.jpg">Do košíku</button>
+                <!-- Relic 3: HALO -->
+                <div class="relic-card reveal-up delay-3">
+                    <div class="relic-frame">
+                        <img src="images/halo.jpg" alt="Halo" class="relic-img">
+                        <div class="relic-glass-glare"></div>
+                    </div>
+                    <div class="relic-info">
+                        <div class="relic-seal"></div>
+                        <h3 class="relic-title tw-text">Halo</h3>
+                        <p class="relic-desc tw-text">Magický prstenec světla. Izolujte objekt od pozadí a obalte jej svatozáří lomů a odrazů.</p>
+                        <div class="relic-actions">
+                            <span class="price">990 Kč</span>
+                            <button class="add-to-cart-btn" data-id="halo" data-name="Halo Filter" data-price="990" data-img="images/halo_transparent.png">Získat artefakt</button>
+                            <a href="product.html?id=halo" class="detail-link">Prozkoumat relikvii →</a>
                         </div>
                     </div>
                 </div>
@@ -176,8 +98,11 @@
         </div>
     </section>
 
+    
+    
+
     <!-- ── ABOUT SECTION (O NÁS) ── -->
-    <section class="about-section" id="o-nas">
+    <section class="about-section rotary-section" id="o-nas">
         <div class="section-container split-layout">
             <div class="about-visual reveal-up">
                 <div class="story-image-container">
@@ -187,31 +112,33 @@
             </div>
 
             <div class="about-content reveal-up delay-1">
-                <span class="sub-label">NÁŠ PŘÍBĚH</span>
-                <h2 class="about-title">Hledání perfektní nedokonalosti</h2>
-                <div class="about-text">
-                    <p>Fotofiltry.cz vznikly jako tvůrčí playground — prostor, kde můžete ohýbat světlo a tvořit
-                        atmosféru přímo v objektivu. Ne až u počítače v postprodukci, ale v samotném okamžiku
-                        stisknutí
-                        spouště.</p>
-                    <p>Naším cílem není sterilní technická dokonalost, ale emoce. Filtry rozbíjejí digitální nudu
-                        moderních snímačů, zjemňují kontrast a přinášejí analogovou organickou texturu tam, kde
-                        chybí.
-                    </p>
-                    <p><strong>Světlo je všechno.</strong> A když ho začnete vnímat přes naše optická skla, změní se
-                        i
-                        to, co fotíte.</p>
+                <div class="paper-stack">
+                    <span class="sub-label">NÁŠ PŘÍBĚH</span>
+                    <h2 class="about-title tw-text">Hledání perfektní nedokonalosti</h2>
+                    <div class="about-text">
+                        <p class="tw-text">Fotofiltry.cz vznikly jako tvůrčí playground — prostor, kde můžete ohýbat světlo a tvořit
+                            atmosféru přímo v objektivu. Ne až u počítače v postprodukci, ale v samotném okamžiku
+                            stisknutí
+                            spouště.</p>
+                        <p class="tw-text">Naším cílem není sterilní technická dokonalost, ale emoce. Filtry rozbíjejí digitální nudu
+                            moderních snímačů, zjemňují kontrast a přinášejí analogovou organickou texturu tam, kde
+                            chybí.
+                        </p>
+                        <p class="tw-text"><strong>Světlo je všechno.</strong> A když ho začnete vnímat přes naše optická skla, změní se
+                            i
+                            to, co fotíte.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- ── HIGH-END CINEMATIC GALLERY ── -->
-    <section class="premium-gallery-section" id="galerie">
+    <section class="premium-gallery-section rotary-section" id="galerie">
         <div class="section-container">
             <div class="section-header reveal-up">
-                <h2 class="section-title">Kreativní vize</h2>
-                <p class="section-subtitle">Zachyceno skrze naše filtry. Ukažte světu svůj pohled.</p>
+                <h2 class="section-title tw-text">Kreativní vize</h2>
+                <p class="section-subtitle tw-text">Zachyceno skrze naše filtry. Ukažte světu svůj pohled.</p>
             </div>
 
             <div class="gallery-bento-grid reveal-up delay-1">
@@ -244,12 +171,12 @@
         </div>
     </section>
 
-    <!-- ── STUDIO JOURNAL (BLOG) ── -->
-    <section class="journal-section" id="journal">
+    <!-- ── JOURNAL SECTION ── -->
+    <section class="journal-section rotary-section" id="journal">
         <div class="section-container">
             <div class="section-header reveal-up">
-                <h2 class="section-title">Studio Journal</h2>
-                <p class="section-subtitle">Inspirace, tutoriály a fotoreportáže od tvůrců z naší komunity.</p>
+                <h2 class="section-title tw-text">Studio Journal</h2>
+                <p class="section-subtitle tw-text">Inspirace, tutoriály a fotoreportáže od tvůrců z naší komunity.</p>
             </div>
 
             <div class="journal-grid">
@@ -288,12 +215,12 @@
         </div>
     </section>
 
-    <!-- ── CONTACT & ORDER FORM (KONTAKT) ── -->
-    <section class="contact-section" id="kontakt">
+    <!-- ── CONTACT SECTION ── -->
+    <section class="contact-section rotary-section" id="kontakt">
         <div class="section-container split-layout">
             <div class="contact-info-block reveal-up">
-                <h2 class="contact-title">Máte dotaz? Vytvořme něco výjimečného.</h2>
-                <p class="contact-desc">Zajímá vás individuální rozměr filtru, nebo chcete navázat spolupráci?
+                <h2 class="contact-title tw-text">Máte dotaz? Vytvořme něco výjimečného.</h2>
+                <p class="contact-desc tw-text">Zajímá vás individuální rozměr filtru, nebo chcete navázat spolupráci?
                     Napište
                     nám nebo použijte rychlou objednávku.</p>
 
@@ -316,33 +243,34 @@
             </div>
 
             <div class="contact-form-block reveal-up delay-1">
-                <form id="order-form" class="premium-form">
-                    <div class="form-group">
-                        <label for="form-name">Vaše jméno</label>
-                        <input type="text" id="form-name" required placeholder="Jan Novák">
-                    </div>
-                    <div class="form-group">
-                        <label for="form-email">E-mail</label>
-                        <input type="email" id="form-email" required placeholder="jan@example.com">
-                    </div>
-                    <div class="form-group">
-                        <label for="form-phone">Telefon</label>
-                        <input type="tel" id="form-phone" required placeholder="+420 777 777 777">
-                    </div>
-                    <div class="form-group">
-                        <label for="form-message">Vaše zpráva</label>
-                        <textarea id="form-message" rows="4" required
-                            placeholder="Zde nám napište váš dotaz..."></textarea>
-                    </div>
-                    <button type="submit" class="submit-btn" id="form-submit">Odeslat poptávku</button>
-                    <div id="form-feedback" class="form-feedback"></div>
-                </form>
+                <div class="envelope-container">
+                    <form id="order-form" class="premium-form envelope-form">
+                        <div class="form-group">
+                            <label for="form-name">Vaše jméno</label>
+                            <input type="text" id="form-name" required placeholder="Jan Novák">
+                        </div>
+                        <div class="form-group">
+                            <label for="form-email">Váš e-mail</label>
+                            <input type="email" id="form-email" required placeholder="jan@novak.cz">
+                        </div>
+                        <div class="form-group">
+                            <label for="form-msg">Zpráva nebo dotaz</label>
+                            <textarea id="form-msg" rows="4" required placeholder="Napište nám..."></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn envelope-submit">
+                            <span class="stamp-text">ODESLAT</span>
+                        </button>
+                    </form>
+                    <div class="envelope-seal"></div>
+                    <div class="envelope-postmark"></div>
+                </div>
             </div>
+
         </div>
     </section>
 
     <!-- ── FOOTER ── -->
-    <footer class="main-footer" role="contentinfo">
+    <footer class="main-footer rotary-section" id="footer-section" role="contentinfo">
         <div class="footer-container reveal-up">
             <div class="footer-col brand-col">
                 <img src="Fotofiltry.cz LOGO, ICON/Fotofiltry.cz/Logo/White logo/White logo.png" alt="Fotofiltry.cz"
@@ -394,6 +322,7 @@
                     class="designed-by">Designed by L-Code Dynamics</span></p>
         </div>
     </footer>
+    </main>
 
     <!-- ── CART SLIDEOUT DRAWER ── -->
     <div class="cart-drawer" id="cart-drawer" aria-hidden="true">
@@ -454,6 +383,16 @@
             </div>
         </div>
     </dialog>
+
+    <!-- ── SVG FILTERS (Crumpled Paper) ── -->
+    <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+      <filter id="crumple" x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="15" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </svg>
+
+
 
     <!-- Link to custom script -->
     <script src="scripts.js"></script>

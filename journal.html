@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kniha Objevů - Journal</title>
+    <style>
+        :root {
+            --gold: #d4af37;
+            --paper: #f4e4bc;
+            --ink: #2c3e50;
+            --blue-ink: #1a3a6e;
+            /* Klasický modrý inkoust */
+        }
+
+        body {
+            background-color: #0d0d0d;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        /* --- ASTROLABE (IndianaJonesEngine) --- */
+        .astrolabe-container {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            perspective: 1500px;
+            z-index: -1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0.3;
+        }
+
+        .astrolabe {
+            position: relative;
+            width: 800px;
+            height: 800px;
+            transform-style: preserve-3d;
+            animation: global-rotate 60s infinite linear;
+        }
+
+        .ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transform-style: preserve-3d;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2), inset 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .ring:nth-child(1) {
+            width: 100%;
+            height: 100%;
+            animation: rot-y 20s infinite linear;
+            border-style: double;
+        }
+
+        .ring:nth-child(2) {
+            width: 85%;
+            height: 85%;
+            animation: rot-x 25s infinite linear;
+            border-style: dashed;
+        }
+
+        .ring:nth-child(3) {
+            width: 70%;
+            height: 70%;
+            animation: rot-z 15s infinite linear;
+            border-width: 1px;
+        }
+
+        .ring:nth-child(4) {
+            width: 50%;
+            height: 50%;
+            animation: rot-y 30s infinite linear reverse;
+            border-style: dotted;
+        }
+
+        @keyframes global-rotate {
+            from {
+                transform: rotateX(60deg) rotateZ(0deg);
+            }
+
+            to {
+                transform: rotateX(60deg) rotateZ(360deg);
+            }
+        }
+
+        @keyframes rot-y {
+            from {
+                transform: translate(-50%, -50%) rotateY(0deg);
+            }
+
+            to {
+                transform: translate(-50%, -50%) rotateY(360deg);
+            }
+        }
+
+        @keyframes rot-x {
+            from {
+                transform: translate(-50%, -50%) rotateX(0deg);
+            }
+
+            to {
+                transform: translate(-50%, -50%) rotateX(360deg);
+            }
+        }
+
+        @keyframes rot-z {
+            from {
+                transform: translate(-50%, -50%) rotateZ(0deg);
+            }
+
+            to {
+                transform: translate(-50%, -50%) rotateZ(360deg);
+            }
+        }
+
+        /* --- BOOK LOGIC --- */
+        .book-wrapper {
+            perspective: 2000px;
+            z-index: 10;
+        }
+
+        .book {
+            width: 450px;
+            height: 600px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+        }
+
+        .page {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: left;
+            transform-style: preserve-3d;
+            transition: transform 1s cubic-bezier(0.645, 0.045, 0.355, 1);
+            cursor: pointer;
+        }
+
+        .page.flipped {
+            transform: rotateY(-180deg);
+        }
+
+        .front,
+        .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            padding: 40px;
+            box-sizing: border-box;
+            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.2);
+        }
+
+        .cover {
+            background: #3d251e;
+            color: var(--gold);
+            border-radius: 5px 15px 15px 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border: 2px solid #2a1a15;
+        }
+
+        .cover-logo {
+            width: 120px;
+            filter: sepia(1) brightness(0.8) contrast(1.2);
+            margin-bottom: 20px;
+        }
+
+        .inner-page {
+            background-color: var(--paper);
+            background-image:
+                linear-gradient(rgba(244, 228, 188, 0.85), rgba(244, 228, 188, 0.85)),
+                url('images/blueprint.jpg');
+            background-size: cover;
+            color: var(--ink);
+            border: 1px solid #dcd0b0;
+        }
+
+        .back {
+            transform: rotateY(180deg);
+        }
+
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 0.5em;
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding-bottom: 10px;
+        }
+
+        p {
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+
+        .hint {
+            position: absolute;
+            bottom: 20px;
+            color: var(--gold);
+            opacity: 0.6;
+            font-size: 0.8em;
+            text-transform: uppercase;
+        }
+
+        /* Interaktivní Overlay Prvky */
+        .preview-container {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            margin: 20px 0;
+            border: 2px solid var(--ink);
+            background: #000;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+
+        .base-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.7;
+            transition: 0.5s;
+        }
+
+        .filter-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            mix-blend-mode: screen;
+            pointer-events: none;
+            opacity: calc(var(--intensity, 0.7) * var(--is-hovered, 0));
+            transform: scale(1.2) rotate(var(--rotation, 0deg));
+            transition: all 0.4s ease-out;
+        }
+
+        .preview-container:hover .filter-overlay {
+            --is-hovered: 1;
+            transform: scale(1) rotate(var(--rotation, 0deg));
+        }
+
+        .preview-container:hover .base-image {
+            opacity: 1;
+        }
+
+        /* Specifické chování pro Fog (nečeká na hover) */
+        .fog-preview .filter-overlay {
+            opacity: var(--intensity, 0);
+        }
+
+        /* Stylování posuvníku (Vintage Slider) */
+        .slider-container {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .intensity-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 2px;
+            background: var(--ink);
+            outline: none;
+        }
+
+        .intensity-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: var(--gold);
+            border: 2px solid var(--ink);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* --- ORDER FORM (Letterhead) --- */
+        .order-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .order-form input,
+        .order-form textarea,
+        .order-form select {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(44, 62, 80, 0.3);
+            font-family: inherit;
+            font-size: 1.1em;
+            color: var(--blue-ink);
+            padding: 8px 5px;
+            outline: none;
+            font-style: italic;
+            /* Dodá pocit ručního písma */
+            text-shadow: 0.5px 0.5px 1.5px rgba(26, 58, 110, 0.3);
+            /* Efekt vpíjení do papíru */
+        }
+
+        .order-form button {
+            margin-top: 10px;
+            background: #8b0000;
+            color: #fff;
+            border: none;
+            padding: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .order-form button:hover {
+            transform: scale(1.02);
+            background: #a30000;
+        }
+
+        /* --- WAX SEAL ANIMATION --- */
+        .wax-seal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(4);
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, #b22222 0%, #8b0000 70%, #5a0000 100%);
+            border-radius: 50%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0;
+            filter: drop-shadow(2px 4px 6px black);
+        }
+
+        /* Nepravidelné okraje vosku */
+        .wax-seal::after {
+            content: '';
+            position: absolute;
+            width: 110%;
+            height: 110%;
+            border: 8px double #700000;
+            border-radius: 48% 52% 50% 50% / 50% 48% 52% 50%;
+            opacity: 0.3;
+        }
+
+        .wax-seal img {
+            width: 80px;
+            filter: brightness(0) invert(1) opacity(0.2) blur(0.5px);
+            /* Efekt debosování loga do vosku */
+        }
+
+        .wax-seal.stamped {
+            display: flex;
+            animation: stamp-drop 0.4s cubic-bezier(.17, 1, .3, 1) forwards;
+        }
+
+        @keyframes stamp-drop {
+            0% {
+                transform: translate(-50%, -50%) scale(4);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Stylování placeholderů, aby ladily s inkoustem */
+        .order-form ::placeholder {
+            color: var(--blue-ink);
+            opacity: 0.4;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="astrolabe-container">
+        <div class="astrolabe">
+            <div class="ring"></div>
+            <div class="ring"></div>
+            <div class="ring"></div>
+            <div class="ring"></div>
+        </div>
+    </div>
+
+    <div class="book-wrapper">
+        <div class="book" id="book">
+            <!-- Strana 1: Cover -->
+            <div class="page" onclick="this.classList.toggle('flipped')" style="z-index: 6;">
+                <div class="front cover">
+                    <img src="images/banner.svg" class="cover-logo" alt="Logo">
+                    <h1>KNIHA OBJEVŮ</h1>
+                    <p>Archiv optických experimentů</p>
+                    <div class="hint">Klikněte pro otevření</div>
+                </div>
+                <div class="inner-page back">
+                    <h2>Log 01: Kaleidoskop</h2>
+                    <p>Dnešní pokus s lomem světla přes trojboký hranol přinesl nečekané výsledky. Geometrická symetrie
+                        obrazu odpovídá matematickým modelům z roku 1817.</p>
+                    <p style="margin-top: 20px; font-style: italic; color: #555;">Poznámka: Zkontrolovat čistotu čoček.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Strana 2: HALO Filtr -->
+            <div class="page" onclick="this.classList.toggle('flipped')" style="z-index: 5;">
+                <div class="inner-page front">
+                    <h2>Log 02: HALO Filtr</h2>
+                    <p>Testování difuzního filtru pro změkčení světelných zdrojů. Tento efekt simuluje organický "glow"
+                        kolem jasných bodů.</p>
+
+                    <div class="preview-container">
+                        <img src="images/camera_lenses.png" class="base-image">
+                        <img src="images/CLEAN_halo_transparent.png" class="filter-overlay">
+                    </div>
+
+                    <div class="slider-container" onclick="event.stopPropagation()">
+                        <label for="halo-intensity"
+                            style="font-size: 0.8em; color: var(--ink); font-weight: bold;">INTENZITA ZÁŘE:</label>
+                        <input type="range" id="halo-intensity" min="0" max="1" step="0.01" value="0.7"
+                            class="intensity-slider">
+                    </div>
+
+                    <p style="font-size: 0.9em; color: #666;">[ Podržte myš nad snímkem pro aplikaci filtru ]</p>
+                </div>
+                <div class="inner-page back">
+                    <h2>Technický nákres</h2>
+                    <p>Konstrukce vyžaduje precizní nanášení nano-částic na povrch optického skla.</p>
+                </div>
+            </div>
+
+            <!-- Strana 3: KALEDO Filtr -->
+            <div class="page" onclick="this.classList.toggle('flipped')" style="z-index: 3;">
+                <div class="inner-page front">
+                    <h2>Log 03: Kaledo Filtr</h2>
+                    <p>Frakcionace obrazu pomocí kaleidoskopické mřížky. Transformuje realitu do snových geometrických
+                        vzorů.</p>
+
+                    <div class="preview-container kaledo-preview" onclick="event.stopPropagation()">
+                        <img src="images/camera_lenses.png" class="base-image">
+                        <img src="images/CLEAN_kaledo_transparent.png" class="filter-overlay" style="--intensity: 1;">
+                    </div>
+
+                    <p style="font-size: 0.9em; color: #666;">[ Pohybujte myší v náhledu pro rotaci hranolu ]</p>
+                </div>
+                <div class="inner-page back">
+                    <h2>Geometrie lomu</h2>
+                    <p>Při rotaci o 45 stupňů dochází k ideálnímu překryvu faset, což vytváří dokonalou osmičetnou
+                        symetrii obrazu.</p>
+                </div>
+            </div>
+
+            <!-- Strana 4: Fog Filtr -->
+            <div class="page" onclick="this.classList.toggle('flipped')" style="z-index: 2;">
+                <div class="inner-page front">
+                    <h2>Log 04: Fog Filtr</h2>
+                    <p>Simulace atmosférického rozptylu. Držením levého tlačítka myši aktivujete kondenzaci na čočce
+                        (zamlžení).</p>
+
+                    <div class="preview-container fog-preview" onclick="event.stopPropagation()">
+                        <img src="images/camera_lenses.png" class="base-image">
+                        <img src="images/CLEAN_fog_transparent.png" class="filter-overlay">
+                    </div>
+
+                    <p style="font-size: 0.9em; color: #666;">[ Podržte levé tlačítko myši pro zamlžení ]</p>
+                </div>
+                <div class="inner-page back">
+                    <h2>Atmosférické poznámky</h2>
+                    <p>Efekt je nejsilnější při nízkých teplotách a vysoké vlhkosti okolního prostředí. Vyžaduje časté
+                        čištění optiky.</p>
+                </div>
+            </div>
+
+            <!-- Strana 5: Objednávkový Arch -->
+            <div class="page" onclick="this.classList.toggle('flipped')" style="z-index: 1;">
+                <div class="inner-page front">
+                    <h2>Objednávkový Arch</h2>
+                    <div id="seal-container" class="wax-seal">
+                        <img src="images/banner.svg" alt="Logo">
+                    </div>
+
+                    <div id="order-content">
+                        <p style="font-size: 0.9em;">Pro vyžádání optických artefaktů vyplňte prosím tento protokol:</p>
+
+                        <form class="order-form" onclick="event.stopPropagation()" id="order-form">
+                            <input type="text" placeholder="Jméno badatele..." required>
+                            <input type="email" placeholder="Depeše (Váš Email)..." required>
+                            <select required>
+                                <option value="" disabled selected>Zvolte artefakt...</option>
+                                <option value="halo">HALO - Difuzní filtr</option>
+                                <option value="kaledo">KALEDO - Hranolový nástavec</option>
+                                <option value="fog">FOG - Zamlžovací sklo</option>
+                            </select>
+                            <textarea placeholder="Poznámky k expedici a adresa..." rows="3"></textarea>
+                            <button type="submit">ZAPEČETIT A ODESLAT</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="inner-page back cover">
+                    <img src="images/banner.svg" class="cover-logo" style="opacity: 0.4; width: 80px;">
+                    <p style="font-size: 0.8em; letter-spacing: 5px; opacity: 0.5;">KONEC ARCHIVU</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // HALO Filtr - specifický selektor pro druhou stranu
+        const haloSlider = document.getElementById('halo-intensity');
+        const haloOverlay = document.querySelector('.page:nth-of-type(2) .filter-overlay');
+
+        haloSlider.addEventListener('input', (e) => {
+            haloOverlay.style.setProperty('--intensity', e.target.value);
+        });
+
+        // KALEDO Filtr - rotace podle myši
+        const kaledoPreview = document.querySelector('.kaledo-preview');
+        const kaledoOverlay = kaledoPreview.querySelector('.filter-overlay');
+
+        kaledoPreview.addEventListener('mousemove', (e) => {
+            const rect = kaledoPreview.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+            const degree = angle * (180 / Math.PI);
+
+            kaledoOverlay.style.setProperty('--rotation', `${degree}deg`);
+        });
+
+        // FOG Filtr - interakce držením myši
+        const fogPreview = document.querySelector('.fog-preview');
+        const fogOverlay = fogPreview.querySelector('.filter-overlay');
+        let fogIntensity = 0;
+        let fogTimer = null;
+
+        const updateFog = (delta) => {
+            fogIntensity = Math.min(1, Math.max(0, fogIntensity + delta));
+            fogOverlay.style.setProperty('--intensity', fogIntensity);
+        };
+
+        fogPreview.addEventListener('mousedown', (e) => {
+            if (e.button !== 0) return; // Pouze levé tlačítko
+            e.preventDefault();
+            clearInterval(fogTimer);
+            fogTimer = setInterval(() => updateFog(0.02), 30); // Postupné zamlžování
+        });
+
+        const stopFog = () => {
+            clearInterval(fogTimer);
+            fogTimer = setInterval(() => updateFog(-0.01), 50); // Pomalé odmlžování
+        };
+
+        window.addEventListener('mouseup', stopFog);
+        fogPreview.addEventListener('mouseleave', stopFog);
+
+        // Logika pro pečeť
+        const orderForm = document.getElementById('order-form');
+        const orderContent = document.getElementById('order-content');
+        const sealContainer = document.getElementById('seal-container');
+
+        orderForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Efekt zmizení textu a formuláře
+            orderContent.style.transition = 'opacity 0.8s';
+            orderContent.style.opacity = '0.1';
+            orderContent.style.filter = 'blur(2px)';
+            // Spuštění animace razítka
+            sealContainer.classList.add('stamped');
+        });
+    </script>
+</body>
+
+</html>

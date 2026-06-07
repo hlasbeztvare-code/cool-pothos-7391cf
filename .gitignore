@@ -1,7 +1,15 @@
-node_modules/
-.DS_Store
-*.log
-.vercel
+# SSL Certifikáty (Nikdy necommitovat!)
+cert.pem
+key.pem
 
-# Local Netlify folder
-.netlify
+# Vercel & Deployment
+.vercel/
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Systémové soubory & Dokumenty
+.DS_Store
+*.pdf

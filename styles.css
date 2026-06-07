@@ -51,7 +51,6 @@ html {
 }
 
 body {
-    background-color: var(--color-bg);
     color: var(--color-text-main);
     font-family: var(--font-body);
     font-size: 16px;
@@ -59,7 +58,16 @@ body {
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
+
+/* ── CRUMPLED PAPER EFFECT ── */
+.crumpled {
+    filter: url('#crumple') sepia(0.2) contrast(1.1);
+    transition: filter 0.3s ease-in-out;
+}
+
 
 /* ── DEKORATIVNÍ POZADÍ ── */
 .bg-glow {
@@ -136,7 +144,7 @@ a {
 }
 
 .brand-logo img {
-    max-height: 50px !important;
+    max-height: 45px !important;
     width: auto;
 }
 
@@ -146,12 +154,15 @@ a {
 
 /* ── DESKTOP NAVIGACE (pevná vpravo, vertikální) ── */
 .desktop-nav {
+    position: fixed;
+    top: 50%;
+    right: 40px;
+    transform: translateY(-50%);
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 2px;
-    margin-left: auto;
-    padding-top: 2px;
+    gap: 15px; /* Added spacing between menu items */
+    z-index: 1000;
 }
 
 /* Skrýt desktop nav na mobilu */
@@ -397,14 +408,43 @@ a {
     overflow: hidden;
 }
 
+.hero-logo {
+    display: inline-block;
+    margin-bottom: 35px;
+    transform: rotate(-10deg); /* tilted from bottom-left up to the right */
+    transform-origin: left bottom;
+    transition: var(--transition-smooth);
+}
+
+.hero-logo img {
+    max-height: 120px;
+    width: auto;
+    display: block;
+}
+
+.hero-logo:hover {
+    transform: rotate(-6deg) scale(1.05);
+}
+
 .hero-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 0 24px;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 60px;
     align-items: center;
+}
+
+@media (max-width: 992px) {
+    .hero-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 50px;
+    }
+    .hero-spin-logo {
+        order: -1;
+    }
 }
 
 .hero-title {
@@ -539,52 +579,51 @@ a {
 }
 
 .product-card {
-    border-radius: 0;
-    border: none;
-    background: transparent;
-    padding: 0;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    box-shadow: none;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35), inset 0 0 20px rgba(255, 255, 255, 0.1);
     transition: var(--transition-smooth);
     cursor: pointer;
 }
 
 .product-card:hover {
     transform: translateY(-8px);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45), inset 0 0 20px rgba(255, 255, 255, 0.15);
 }
 
 .card-image-wrap {
     width: 100%;
     aspect-ratio: 4 / 3;
     border-radius: 20px;
-    overflow: hidden;
+    overflow: visible;
     position: relative;
-    background-color: #ede6d8;
+    background-color: transparent;
     margin-bottom: 20px;
-    box-shadow:
-        0 4px 6px rgba(0,0,0,0.04),
-        0 12px 40px rgba(0,0,0,0.08),
-        0 30px 80px rgba(0,0,0,0.05);
-    transition: box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: none;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .product-card:hover .card-image-wrap {
-    box-shadow:
-        0 8px 12px rgba(0,0,0,0.06),
-        0 24px 60px rgba(0,0,0,0.12),
-        0 50px 120px rgba(0,0,0,0.07);
+    box-shadow: none;
 }
 
 .product-img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     transition: var(--transition-smooth);
+    transform: scale(1.15) translateY(-8%);
+    filter: drop-shadow(0 15px 25px rgba(0,0,0,0.25));
 }
 
 .product-card:hover .product-img {
-    transform: scale(1.05);
+    transform: scale(1.25) translateY(-12%);
 }
 
 .card-info {
@@ -1791,21 +1830,23 @@ a {
     width: 100%;
     aspect-ratio: 4 / 3;
     border-radius: 24px;
-    overflow: hidden;
-    background-color: var(--color-card);
-    border: 1px solid rgba(var(--color-accent-rgb), 0.1);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+    overflow: visible;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
 }
 
 .product-detail-main-img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: scale(1.15) translateY(-5%);
+    filter: drop-shadow(0 20px 30px rgba(0,0,0,0.25));
 }
 
 .product-detail-main-image-wrap:hover .product-detail-main-img {
-    transform: scale(1.05);
+    transform: scale(1.25) translateY(-8%);
 }
 
 .product-detail-thumbs {
@@ -1822,7 +1863,7 @@ a {
     border-radius: 12px;
     cursor: pointer;
     border: 2px solid transparent;
-    background-color: var(--color-card);
+    background-color: transparent;
     transition: var(--transition-smooth);
 }
 
@@ -2231,3 +2272,842 @@ a {
         grid-row: span 1;
     }
 }
+/* ── HERO ARTIFACTS DESK (Indiana Jones style) ── */
+.hero-artifacts-desk {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.artifact-item {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.4s ease;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.artifact-img {
+    width: 280px;
+    height: auto;
+    filter: drop-shadow(0 25px 35px rgba(20, 10, 5, 0.3)) drop-shadow(0 5px 15px rgba(20, 10, 5, 0.2));
+    transition: filter 0.4s ease, transform 0.4s ease;
+}
+
+.artifact-label {
+    margin-top: 15px;
+    font-family: 'Shadows Into Light', 'Caveat', 'Just Another Hand', cursive, sans-serif;
+    font-size: 22px;
+    color: rgba(43, 24, 16, 0.85);
+    background: rgba(255, 255, 255, 0.4);
+    padding: 4px 12px;
+    border-radius: 4px;
+    transform: rotate(-2deg);
+    opacity: 0.8;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    border: 1px solid rgba(43, 24, 16, 0.1);
+    box-shadow: 1px 2px 4px rgba(0,0,0,0.05);
+}
+
+.artifact-item:hover {
+    z-index: 20;
+    transform: scale(1.05) translateY(-10px) !important;
+}
+
+.artifact-item:hover .artifact-img {
+    filter: drop-shadow(0 35px 45px rgba(20, 10, 5, 0.4)) drop-shadow(0 15px 25px rgba(20, 10, 5, 0.3));
+}
+
+.artifact-item:hover .artifact-label {
+    opacity: 1;
+    transform: rotate(0deg) scale(1.1);
+}
+
+/* Specific placements for the Indiana Jones scattered look */
+.artifact-kaledo {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-8deg);
+    z-index: 12;
+}
+
+.artifact-fog {
+    top: 20%;
+    left: 10%;
+    transform: rotate(15deg);
+    z-index: 11;
+}
+
+.artifact-halo {
+    top: 35%;
+    right: 5%;
+    transform: rotate(-20deg);
+    z-index: 13;
+}
+
+@media (max-width: 992px) {
+    .hero-artifacts-desk {
+        height: 600px;
+    }
+    .artifact-img {
+        width: 200px;
+    }
+    .artifact-fog {
+        top: 0;
+        left: 5%;
+    }
+    .artifact-kaledo {
+        top: 40%;
+    }
+    .artifact-halo {
+        top: 75%;
+        right: 15%;
+    }
+}
+
+/* ── ROTARY PRESENTATION SYSTEM ── */
+body {
+    overflow: hidden !important;
+}
+
+.rotary-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    perspective: 1500px;
+    transform-style: preserve-3d;
+    z-index: 10;
+}
+
+.rotary-section {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: transparent;
+    opacity: 0;
+    visibility: hidden;
+    transform: rotateX(-30deg) translateY(-200px) scale(0.9);
+    transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                opacity 0.6s ease,
+                visibility 0.8s;
+    transform-origin: center center;
+    will-change: transform, opacity;
+}
+
+.rotary-section.rotary-active {
+    opacity: 1;
+    visibility: visible;
+    transform: rotateX(0deg) translateY(0) scale(1);
+    z-index: 50;
+}
+
+.rotary-section.rotary-out-up {
+    transform: rotateX(30deg) translateY(200px) scale(0.9);
+    opacity: 0;
+    visibility: hidden;
+}
+
+.rotary-section.rotary-out-down {
+    transform: rotateX(-30deg) translateY(-200px) scale(0.9);
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Fix padding for sections since they are full height now */
+.rotary-section .section-container,
+.rotary-section .hero-container {
+    padding-top: 140px; /* Space for fixed header */
+    padding-bottom: 60px;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.hero-section.rotary-section {
+    overflow-y: hidden; /* Hero shouldn't scroll */
+}
+
+/* Scrollbar styling for inner scrolling */
+.rotary-section::-webkit-scrollbar {
+    width: 6px;
+}
+.rotary-section::-webkit-scrollbar-track {
+    background: rgba(var(--color-bg-rgb), 0.5);
+}
+.rotary-section::-webkit-scrollbar-thumb {
+    background: var(--color-accent);
+    border-radius: 10px;
+}
+
+/* ── PREMIUM ACCORDION PRODUCTS ── */
+.premium-accordion-section {
+    padding: 0 !important;
+    margin: 0;
+    overflow: hidden !important;
+}
+
+.accordion-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    padding-top: 100px; /* Leave space for top nav */
+}
+
+.accordion-panel {
+    position: relative;
+    flex: 1;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: flex 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s ease;
+    cursor: pointer;
+    overflow: hidden;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.accordion-panel:first-child {
+    border-left: none;
+}
+
+.accordion-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(15, 8, 5, 0.9) 0%, rgba(15, 8, 5, 0.4) 50%, rgba(15, 8, 5, 0.2) 100%);
+    backdrop-filter: blur(4px);
+    transition: backdrop-filter 0.5s ease, background 0.5s ease;
+}
+
+.accordion-panel:hover .accordion-overlay {
+    backdrop-filter: blur(0px);
+    background: linear-gradient(to top, rgba(15, 8, 5, 0.95) 0%, rgba(15, 8, 5, 0.1) 60%, transparent 100%);
+}
+
+.accordion-content {
+    position: absolute;
+    bottom: 50px;
+    left: 40px;
+    right: 40px;
+    color: #fff;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 100%;
+}
+
+.accordion-header {
+    display: flex;
+    align-items: baseline;
+    gap: 15px;
+    margin-bottom: 0;
+    transition: transform 0.5s ease;
+}
+
+.accordion-header h2 {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 300;
+    opacity: 0.6;
+    margin: 0;
+}
+
+.accordion-header h3 {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 600;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    white-space: nowrap;
+}
+
+.accordion-body {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.5s ease;
+    padding-top: 0;
+}
+
+.accordion-body p {
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 15px 0 25px 0;
+    color: rgba(255, 255, 255, 0.8);
+    max-width: 400px;
+}
+
+.accordion-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.accordion-actions .price {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.accordion-actions .add-to-cart-btn {
+    background: #fff;
+    color: #0f0805;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.accordion-actions .add-to-cart-btn:hover {
+    background: var(--color-accent);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.accordion-actions .detail-link {
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.accordion-actions .detail-link:hover {
+    color: #fff;
+}
+
+/* Hover State */
+.accordion-panel:hover {
+    flex: 3;
+}
+
+.accordion-panel:hover .accordion-header {
+    transform: translateY(-10px);
+}
+
+.accordion-panel:hover .accordion-header h3 {
+    font-size: 48px;
+}
+
+.accordion-panel:hover .accordion-body {
+    max-height: 300px;
+    opacity: 1;
+    padding-top: 10px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 992px) {
+    .accordion-container {
+        flex-direction: column;
+        padding-top: 80px;
+    }
+    
+    .accordion-panel {
+        flex: 1;
+        border-left: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .accordion-panel:hover {
+        flex: 2;
+    }
+    
+    .accordion-content {
+        left: 20px;
+        right: 20px;
+        bottom: 30px;
+    }
+    
+    .accordion-panel:hover .accordion-header h3 {
+        font-size: 32px;
+    }
+}
+
+/* ── TYPEWRITER EFFECT ── */
+.tw-text {
+    visibility: hidden; /* Hide initially to prevent FOUC */
+}
+.tw-text.tw-ready {
+    visibility: visible;
+}
+
+.tw-cursor {
+    display: inline-block;
+    width: 0.5em;
+    height: 1em;
+    background-color: var(--color-accent, rgba(43, 24, 16, 0.8));
+    vertical-align: bottom;
+    animation: blink-cursor 1s step-end infinite;
+    margin-left: 2px;
+}
+
+@keyframes blink-cursor {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* ── SKEUOMORPHIC PAPER STACK (O NÁS) ── */
+.paper-stack {
+    position: relative;
+    background: #fdfbf7;
+    padding: 40px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2), inset 0 0 50px rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.05);
+    z-index: 5;
+    color: #2b1810;
+    margin: 20px 0;
+}
+
+.paper-stack .sub-label,
+.paper-stack .about-title,
+.paper-stack p,
+.paper-stack strong,
+.paper-stack .tw-cursor {
+    color: #2b1810 !important;
+}
+
+.paper-stack::before,
+.paper-stack::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #fdfbf7;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+    z-index: -1;
+}
+
+.paper-stack::before {
+    transform: rotate(-3deg);
+}
+
+.paper-stack::after {
+    transform: rotate(2deg);
+    z-index: -2;
+}
+
+/* ── SKEUOMORPHIC ENVELOPE (KONTAKT) ── */
+.envelope-container {
+    position: relative;
+    background: #cfb18f;
+    padding: 50px 40px 70px 40px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    border: 1px solid rgba(0,0,0,0.1);
+    max-width: 500px;
+    margin: 0 auto;
+    overflow: hidden;
+    color: #2b1810;
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+/* Envelope Flap */
+.envelope-container::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    border-top: 80px solid rgba(0,0,0,0.05);
+    border-left: 250px solid transparent;
+    border-right: 250px solid transparent;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.envelope-form {
+    position: relative;
+    z-index: 2;
+}
+
+.envelope-form .form-group label {
+    color: #553a25;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+
+.envelope-form input,
+.envelope-form textarea {
+    background: rgba(255, 255, 255, 0.85) !important;
+    border: 1px dashed rgba(0,0,0,0.3) !important;
+    color: #2b1810 !important;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.05);
+    border-radius: 0 !important;
+    padding: 12px !important;
+}
+
+.envelope-form input:focus,
+.envelope-form textarea:focus {
+    background: #fff !important;
+    border: 1px dashed rgba(0,0,0,0.6) !important;
+    outline: none;
+}
+
+/* Stamp button */
+.envelope-submit {
+    background: transparent !important;
+    border: 3px solid #8b1515 !important;
+    color: #8b1515 !important;
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: 2px;
+    padding: 10px 20px;
+    transform: rotate(-5deg);
+    display: inline-block;
+    transition: transform 0.2s, background 0.2s;
+    cursor: pointer;
+    margin-top: 10px;
+    border-radius: 4px;
+}
+
+.envelope-submit:hover {
+    transform: scale(1.1) rotate(-5deg);
+    background: rgba(139, 21, 21, 0.05) !important;
+}
+
+/* Wax Seal */
+.envelope-seal {
+    position: absolute;
+    bottom: 25px;
+    right: 25px;
+    width: 60px;
+    height: 60px;
+    background: #8b1515;
+    border-radius: 50%;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.4), inset 0 0 10px rgba(0,0,0,0.6);
+    z-index: 3;
+}
+
+.envelope-seal::after {
+    content: '★';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgba(255,255,255,0.3);
+    font-size: 24px;
+}
+
+/* Postmark */
+.envelope-postmark {
+    position: absolute;
+    bottom: 45px;
+    right: 95px;
+    width: 80px;
+    height: 80px;
+    border: 2px solid rgba(0,0,0,0.15);
+    border-radius: 50%;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.envelope-postmark::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: -20px; right: -20px;
+    height: 2px;
+    background: rgba(0,0,0,0.15);
+    transform: rotate(-15deg);
+}
+
+.envelope-postmark::after {
+    content: '';
+    position: absolute;
+    top: 60%; left: -15px; right: -15px;
+    height: 2px;
+    background: rgba(0,0,0,0.15);
+    transform: rotate(-15deg);
+}
+
+/* ── MUSEUM RELICS COLLECTION ── */
+.relic-museum-section {
+    padding: 100px 0;
+    background: transparent;
+}
+
+.relic-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    margin-top: 60px;
+}
+
+.relic-card {
+    display: flex;
+    flex-direction: column;
+    perspective: 1000px;
+    position: relative;
+}
+
+.relic-frame {
+    position: relative;
+    background: #0f0805;
+    padding: 20px;
+    border: 3px solid #8b1515;
+    border-radius: 8px;
+    box-shadow: 
+        0 20px 40px rgba(0,0,0,0.6), 
+        inset 0 0 20px rgba(0,0,0,0.8),
+        0 0 0 10px #1a100c, /* Outer dark wood */
+        0 0 0 12px rgba(207, 177, 143, 0.2); /* Gold trim */
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease;
+    margin-bottom: 30px;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.relic-frame::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+}
+
+.relic-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+    filter: sepia(0.3) contrast(1.1) brightness(0.9);
+    transition: transform 0.5s ease, filter 0.5s ease;
+}
+
+.relic-glass-glare {
+    position: absolute;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    background: linear-gradient(135deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0) 70%);
+    transform: rotate(30deg) translateY(-100%);
+    transition: transform 0.6s ease;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Removed pure CSS hover frame */
+
+/* Removed pure CSS hover img */
+
+/* Removed pure CSS hover glare */
+
+.relic-info {
+    position: relative;
+    padding: 20px;
+    background: rgba(15, 8, 5, 0.8);
+    border: 1px solid rgba(207, 177, 143, 0.15);
+    border-radius: 4px;
+}
+
+.relic-seal {
+    position: absolute;
+    top: -20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background: #8b1515;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5), inset 0 0 5px rgba(0,0,0,0.8);
+    z-index: 3;
+}
+
+.relic-seal::after {
+    content: '★';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgba(255,255,255,0.3);
+    font-size: 16px;
+}
+
+.relic-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--color-accent);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.relic-desc {
+    color: var(--color-text-muted);
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.relic-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+}
+
+.relic-actions .price {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--color-text);
+}
+
+@media (max-width: 900px) {
+    .relic-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+
+/* ── CUSTOM CURSOR ── */
+body, a, button, input, textarea {
+    cursor: none !important;
+}
+
+.custom-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(207, 177, 143, 0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s, background 0.3s;
+    mix-blend-mode: screen;
+}
+
+.custom-cursor.is-hovering {
+    width: 60px;
+    height: 60px;
+    background: rgba(207, 177, 143, 0.1);
+    border-color: rgba(207, 177, 143, 0.8);
+}
+
+.cursor-crosshair {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%; height: 100%;
+}
+.cursor-crosshair::before, .cursor-crosshair::after {
+    content: '';
+    position: absolute;
+    background: rgba(207, 177, 143, 0.6);
+}
+.cursor-crosshair::before {
+    top: 50%; left: -5px; right: -5px; height: 1px;
+    transform: translateY(-50%);
+}
+.cursor-crosshair::after {
+    left: 50%; top: -5px; bottom: -5px; width: 1px;
+    transform: translateX(-50%);
+}
+
+.custom-cursor-dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 6px;
+    background: #fff;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 100000;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 10px #fff, 0 0 20px rgba(207, 177, 143, 0.8);
+}
+
+/* ── CINEMATIC ENTRANCE ── */
+.cinematic-entrance {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #050302;
+    z-index: 999999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 2s ease, visibility 2s;
+}
+
+.cinematic-entrance.is-loaded {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.entrance-flash {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.entrance-flash.flash-active {
+    opacity: 1;
+}
+
+/* ── DYNAMIC RELIC TILT OVERRIDES ── */
+.relic-frame {
+    /* We add transition for smooth return to 0 when mouse leaves */
+    transition: transform 0.1s cubic-bezier(0.1, 0.9, 0.2, 1), box-shadow 0.1s ease;
+    transform: rotateX(var(--rotate-x, 0deg)) rotateY(var(--rotate-y, 0deg)) translateZ(0px);
+}
+
+.relic-card.is-interacting .relic-frame {
+    transform: rotateX(var(--rotate-x, 0deg)) rotateY(var(--rotate-y, 0deg)) translateZ(30px);
+    box-shadow: 
+        15px 30px 50px rgba(0,0,0,0.8), 
+        inset 0 0 20px rgba(0,0,0,0.8),
+        0 0 0 10px #1a100c,
+        0 0 0 12px rgba(207, 177, 143, 0.5);
+}
+
+.relic-card.is-interacting .relic-img {
+    transform: scale(1.05);
+    filter: sepia(0) contrast(1) brightness(1.1);
+}
+
+.relic-card.is-interacting .relic-glass-glare {
+    /* Dynamic glare positioning */
+    opacity: 1;
+    transform: translate(var(--glare-x, -50%), var(--glare-y, -50%)) rotate(30deg);
+    background: radial-gradient(circle at center, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 60%);
+    width: 200%; height: 200%;
+}
+.relic-glass-glare {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+
+

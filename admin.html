@@ -20,14 +20,14 @@
 
     <style>
         :root {
-            --bg-base: #0a0a0c;
-            --bg-surface: #121216;
-            --bg-surface-elevated: #1a1a22;
-            --accent: #d68c3f;
-            --accent-hover: #f1a95c;
-            --text-main: #f3f3f6;
-            --text-muted: #8e8e9f;
-            --border: #22222a;
+            --bg-base: #ede6d8;
+            --bg-surface: #e5d9c5;
+            --bg-surface-elevated: #d8cdba;
+            --accent: #F2A359;
+            --accent-hover: #e0924b;
+            --text-main: #1a1512;
+            --text-muted: #6b635e;
+            --border: #d8cdba;
             --danger: #e65050;
             --success: #50e690;
             --font: 'Outfit', sans-serif;
@@ -57,6 +57,34 @@
             flex-direction: column;
             justify-content: flex-start;
             align-items: center;
+            position: relative;
+        }
+
+        /* ── DYNAMIC BLUEPRINT BACKGROUND ── */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: url('images/blueprint.png');
+            background-repeat: repeat;
+            background-size: 600px;
+            opacity: 0.15; /* Subtle blend with the sand background */
+            z-index: -1;
+            animation: panBlueprint 100s linear infinite;
+            pointer-events: none;
+            mix-blend-mode: multiply; /* Looks like ink on paper */
+        }
+
+        @keyframes panBlueprint {
+            from {
+                background-position: 0 0;
+            }
+            to {
+                background-position: 600px 600px;
+            }
         }
 
         /* ── AUTH CONTAINER ── */

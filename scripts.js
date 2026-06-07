@@ -949,23 +949,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Vložení kompletního HTML
         wrapper.innerHTML =
-            '<!-- Left Visual Gallery -->' +
-            '<div class="product-detail-visual">' +
+            '<!-- Left Visual Gallery (Smaller) -->' +
+            '<div class="product-detail-visual" style="max-width: 450px; width: 100%;">' +
             '<div class="product-detail-main-image-wrap">' +
-            '<img src="' + activeImage + '" alt="' + product.name + '" class="product-detail-main-img" id="main-detail-img" fetchpriority="high">' +
+            '<img src="' + activeImage + '" alt="' + product.name + '" class="product-detail-main-img" id="main-detail-img" fetchpriority="high" style="transform: scale(1.0);">' +
             '</div>' +
             '<div class="product-detail-thumbs" id="detail-thumbs-container">' +
             thumbsHtml +
             '</div>' +
+            '</div>' +
 
-            '<!-- Premium Editorial Section (High-Ticket) -->' +
-            '<div class="premium-editorial-section">' +
+            '<!-- Right Info Block -->' +
+            '<div class="product-detail-info">' +
+            '<div class="product-detail-badge tw-text">Prémiová kvalita</div>' +
+            '<span class="product-detail-category tw-text">Optické fotografické filtry</span>' +
+            '<h1 class="product-detail-title tw-text">' + product.name + '</h1>' +
+            '<div class="product-detail-price-wrap tw-text" id="detail-price">' + initialPriceText + '</div>' +
+
+            '<!-- Premium Editorial Section (Description typing out) -->' +
+            '<div class="premium-editorial-section" style="margin-top: 30px;">' +
             '<div class="editorial-block">' +
-            '<h3 class="editorial-title">Příběh produktu</h3>' +
-            '<div class="editorial-content">' + product.description + '</div>' +
+            '<h3 class="editorial-title tw-text">Příběh produktu</h3>' +
+            '<div class="editorial-content" style="font-size: 16px; line-height: 1.6; opacity: 0.8;">' + product.description + '</div>' +
             '</div>' +
             '<div class="editorial-block">' +
-            '<h3 class="editorial-title">Technická specifikace</h3>' +
+            '<h3 class="editorial-title tw-text">Technická specifikace</h3>' +
             '<ul class="premium-specs-list">' +
             '<li><span>Optické sklo</span><strong>Schott B270 (vysoká propustnost)</strong></li>' +
             '<li><span>Konstrukce</span><strong>Slim hliníková slitina, anodizováno</strong></li>' +
@@ -973,24 +981,12 @@ document.addEventListener('DOMContentLoaded', function () {
             '<li><span>Závit</span><strong>Standardní vnitřní fotografický</strong></li>' +
             '</ul>' +
             '</div>' +
-            '<div class="editorial-block shipping-block">' +
-            '<h3 class="editorial-title">Doprava a servis</h3>' +
-            '<p>Každý filtr je ručně kontrolován před odesláním. Odesíláme expresně přes Zásilkovnu. <strong>Doprava zdarma nad 2 000 Kč.</strong> Součástí je prémiové balení a dvouletá záruka.</p>' +
             '</div>' +
-            '</div>' +
-            '</div>' +
-
-            '<!-- Right Info Block -->' +
-            '<div class="product-detail-info">' +
-            '<div class="product-detail-badge">Prémiová kvalita</div>' +
-            '<span class="product-detail-category">Optické fotografické filtry</span>' +
-            '<h1 class="product-detail-title">' + product.name + '</h1>' +
-            '<div class="product-detail-price-wrap" id="detail-price">' + initialPriceText + '</div>' +
 
             '<!-- Variant Selection -->' +
             (product.variants && product.variants.length > 0 ?
                 '<div class="product-option-group">' +
-                '<span class="product-option-label">Volba verze / efektu:</span>' +
+                '<span class="product-option-label tw-text">Volba verze / efektu:</span>' +
                 '<div class="product-variant-pills" id="detail-variants-container">' +
                 variantsHtml +
                 '</div>' +
@@ -999,7 +995,7 @@ document.addEventListener('DOMContentLoaded', function () {
             '<!-- Size Selection -->' +
             (product.sizes && product.sizes.length > 0 ?
                 '<div class="product-option-group">' +
-                '<span class="product-option-label">Velikost (průměr závitu objektivu):</span>' +
+                '<span class="product-option-label tw-text">Velikost (průměr závitu objektivu):</span>' +
                 '<div class="product-size-grid" id="detail-sizes-container">' +
                 sizesHtml +
                 '</div>' +
@@ -1021,6 +1017,11 @@ document.addEventListener('DOMContentLoaded', function () {
             '<button class="detail-add-btn ' + (selectedSizeObj.stock === 0 ? 'disabled' : '') + '" id="detail-add-to-cart-btn" ' + (selectedSizeObj.stock === 0 ? 'disabled' : '') + ' style="width:100%;">Do košíku</button>' +
             '</div>' +
             '</div>';
+
+        if (typeof TypewriterEngine !== 'undefined') {
+            TypewriterEngine.init();
+            TypewriterEngine.playSection(wrapper);
+        }
 
         // ── AKCE A INTERAKCE NA DETAILU PRODUKTU ──
 
@@ -1121,4 +1122,339 @@ document.addEventListener('DOMContentLoaded', function () {
             );
         });
     }
+    // --- Globální IndianaJonesEngine Blueprint Background ---
+    if (!document.getElementById('indiana-background')) {
+        var canvas = document.createElement('canvas');
+        canvas.id = 'indiana-background';
+        canvas.style.position = 'fixed';
+        canvas.style.top = '0';
+        canvas.style.left = '0';
+        canvas.style.width = '100vw';
+        canvas.style.height = '100vh';
+        canvas.style.zIndex = '-1';
+        canvas.style.pointerEvents = 'none';
+        document.body.prepend(canvas);
+
+        var script = document.createElement('script');
+        script.type = 'module';
+        script.textContent = "import { IndianaEngine } from './IndianaJonesEngine.js';\n" +
+                             "const canvas = document.getElementById('indiana-background');\n" +
+                             "new IndianaEngine(canvas);";
+        document.body.appendChild(script);
+    }
 });
+
+// ── ROTARY ENGINE ──
+document.addEventListener('DOMContentLoaded', () => {
+    const wrapper = document.getElementById('rotary-wrapper');
+    if (!wrapper) return;
+
+    // Zapojení všech rotujících sekcí, včetně kolekce
+    const sections = Array.from(document.querySelectorAll('.rotary-section'));
+    if (sections.length === 0) return;
+
+    let currentIndex = 0;
+    let isAnimating = false;
+
+    // Helper to switch active section
+    function goToSection(index) {
+        if (isAnimating || index === currentIndex || index < 0 || index >= sections.length) return;
+        
+        isAnimating = true;
+        const currentSection = sections[currentIndex];
+        const nextSection = sections[index];
+
+        // Direction check
+        const goingDown = index > currentIndex;
+
+        // Reset classes
+        currentSection.classList.remove('rotary-active', 'rotary-out-up', 'rotary-out-down');
+        nextSection.classList.remove('rotary-active', 'rotary-out-up', 'rotary-out-down');
+
+        // Apply transition out
+        if (goingDown) {
+            currentSection.classList.add('rotary-out-up');
+            // Before animation, next section should be at bottom
+            nextSection.style.transition = 'none';
+            nextSection.classList.add('rotary-out-down');
+        } else {
+            currentSection.classList.add('rotary-out-down');
+            // Before animation, next section should be at top
+            nextSection.style.transition = 'none';
+            nextSection.classList.add('rotary-out-up');
+        }
+
+        // Force reflow
+        void nextSection.offsetWidth;
+
+        // Apply transition in
+        nextSection.style.transition = '';
+        nextSection.classList.remove('rotary-out-up', 'rotary-out-down');
+        nextSection.classList.add('rotary-active');
+        TypewriterEngine.resetSection(currentSection);
+        TypewriterEngine.playSection(nextSection);
+
+        currentIndex = index;
+
+        setTimeout(() => {
+            isAnimating = false;
+        }, 800); // match CSS transition duration
+    }
+
+    // Mouse wheel handling
+    let wheelTimeout;
+    window.addEventListener('wheel', (e) => {
+        // Allow inner scrolling if the section overflows
+        const activeSec = sections[currentIndex];
+        const canScrollUp = activeSec.scrollTop > 0;
+        const canScrollDown = activeSec.scrollHeight - activeSec.clientHeight > activeSec.scrollTop + 1;
+
+        if (e.deltaY > 0 && canScrollDown) return; // let natural scroll happen
+        if (e.deltaY < 0 && canScrollUp) return;
+
+        e.preventDefault(); // Prevent default if at boundaries
+
+        clearTimeout(wheelTimeout);
+        wheelTimeout = setTimeout(() => {
+            if (e.deltaY > 30) {
+                goToSection(currentIndex + 1);
+            } else if (e.deltaY < -30) {
+                goToSection(currentIndex - 1);
+            }
+        }, 50); // debounce threshold
+    }, { passive: false });
+
+    // Touch handling
+    let touchStartY = 0;
+    window.addEventListener('touchstart', (e) => {
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+        const activeSec = sections[currentIndex];
+        const canScrollUp = activeSec.scrollTop > 0;
+        const canScrollDown = activeSec.scrollHeight - activeSec.clientHeight > activeSec.scrollTop + 1;
+
+        const touchEndY = e.touches[0].clientY;
+        const diff = touchStartY - touchEndY;
+
+        if (diff > 0 && canScrollDown) return;
+        if (diff < 0 && canScrollUp) return;
+
+        // Prevent body scroll bounce
+        if (e.cancelable) e.preventDefault();
+    }, { passive: false });
+
+    window.addEventListener('touchend', (e) => {
+        const touchEndY = e.changedTouches[0].clientY;
+        const diff = touchStartY - touchEndY;
+        
+        if (Math.abs(diff) > 50) {
+            if (diff > 0) goToSection(currentIndex + 1);
+            else goToSection(currentIndex - 1);
+        }
+    });
+
+    // Update Nav links
+    const navLinks = document.querySelectorAll('.desktop-nav .nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            const targetId = link.getAttribute('href').replace('index.html', '').replace('#', '');
+            const targetIndex = sections.findIndex(sec => sec.id === targetId);
+            if (targetIndex !== -1) {
+                e.preventDefault();
+                goToSection(targetIndex);
+            }
+        });
+    });
+
+    // Force active on load
+    sections.forEach((sec, i) => {
+        if (i !== currentIndex) {
+            sec.classList.remove('rotary-active');
+            sec.classList.add('rotary-out-down');
+        } else {
+            sec.classList.add('rotary-active');
+            setTimeout(()=>TypewriterEngine.playSection(sec), 500);
+        }
+    });
+});
+
+
+// ── TYPEWRITER ENGINE ──
+const TypewriterEngine = {
+    init: function() {
+        document.querySelectorAll('.tw-text').forEach(el => {
+            if (!el.hasAttribute('data-tw-original')) {
+                el.setAttribute('data-tw-original', el.innerHTML);
+            }
+            this.resetElement(el);
+            el.classList.add('tw-ready');
+        });
+    },
+    resetElement: function(el) {
+        el.innerHTML = '';
+        el.removeAttribute('data-tw-active');
+    },
+    resetSection: function(section) {
+        if (!section) return;
+        section.querySelectorAll('.tw-text').forEach(el => this.resetElement(el));
+    },
+    playSection: function(section) {
+        if (!section) return;
+        const elements = section.querySelectorAll('.tw-text');
+        if (elements.length === 0) return;
+
+        // Play sequentially with small delays based on index
+        elements.forEach((el, index) => {
+            setTimeout(() => {
+                this.typeElement(el);
+            }, index * 400 + 400); // 400ms delay between elements, plus initial 400ms delay for rotation
+        });
+    },
+    typeElement: function(el) {
+        if (el.hasAttribute('data-tw-active')) return;
+        el.setAttribute('data-tw-active', 'true');
+        
+        const htmlContent = el.getAttribute('data-tw-original');
+        el.innerHTML = '';
+        
+        const cursor = document.createElement('span');
+        cursor.className = 'tw-cursor';
+        el.appendChild(cursor);
+
+        let i = 0;
+        let isTag = false;
+        let tagBuffer = '';
+
+        const typeInterval = setInterval(() => {
+            if (i >= htmlContent.length) {
+                clearInterval(typeInterval);
+                setTimeout(() => cursor.remove(), 1500); // Remove cursor after done
+                return;
+            }
+
+            const char = htmlContent.charAt(i);
+            
+            if (char === '<') {
+                isTag = true;
+            }
+            
+            if (isTag) {
+                tagBuffer += char;
+                if (char === '>') {
+                    isTag = false;
+                    // insert tag before cursor
+                    cursor.insertAdjacentHTML('beforebegin', tagBuffer);
+                    tagBuffer = '';
+                }
+            } else {
+                cursor.insertAdjacentText('beforebegin', char);
+            }
+            
+            i++;
+        }, 30); // 30ms per character
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    TypewriterEngine.init();
+});
+
+
+// ── WOW EFFECTS: ENTRANCE, CURSOR, 3D TILT ──
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Cinematic Entrance
+    const entrance = document.getElementById('cinematic-entrance');
+    const flash = entrance?.querySelector('.entrance-flash');
+    if (entrance) {
+        // Wait for Astrolabe to render briefly, then flash and fade
+        setTimeout(() => {
+            if (flash) flash.classList.add('flash-active');
+            setTimeout(() => {
+                if (flash) flash.classList.remove('flash-active');
+                entrance.classList.add('is-loaded');
+            }, 100);
+        }, 800);
+    }
+
+    // 2. Custom Cursor Tracking
+    const cursor = document.getElementById('custom-cursor');
+    const cursorDot = document.getElementById('custom-cursor-dot');
+    
+    if (cursor && cursorDot) {
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let cursorX = mouseX;
+        let cursorY = mouseY;
+        
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            // Dot follows instantly
+            cursorDot.style.left = mouseX + 'px';
+            cursorDot.style.top = mouseY + 'px';
+        });
+        
+        // Smooth trailing for the main crosshair
+        const renderCursor = () => {
+            cursorX += (mouseX - cursorX) * 0.15;
+            cursorY += (mouseY - cursorY) * 0.15;
+            cursor.style.left = cursorX + 'px';
+            cursor.style.top = cursorY + 'px';
+            requestAnimationFrame(renderCursor);
+        };
+        requestAnimationFrame(renderCursor);
+        
+        // Hover states
+        const hoverElements = document.querySelectorAll('a, button, .relic-card, .stepper-btn, .variant-pill, .size-btn');
+        hoverElements.forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('is-hovering'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('is-hovering'));
+        });
+    }
+
+    // 3. Dynamic 3D Relic Cards Tilt & Glare
+    const relicCards = document.querySelectorAll('.relic-card');
+    relicCards.forEach(card => {
+        const frame = card.querySelector('.relic-frame');
+        
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left; // x position within the element.
+            const y = e.clientY - rect.top;  // y position within the element.
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            // Calculate rotation (max 10 degrees)
+            const rotateX = ((y - centerY) / centerY) * -10;
+            const rotateY = ((x - centerX) / centerX) * 10;
+            
+            // Calculate glare position
+            const glareX = (x / rect.width) * 100 - 50;
+            const glareY = (y / rect.height) * 100 - 50;
+            
+            card.classList.add('is-interacting');
+            
+            if (frame) {
+                frame.style.setProperty('--rotate-x', `${rotateX}deg`);
+                frame.style.setProperty('--rotate-y', `${rotateY}deg`);
+                frame.style.setProperty('--glare-x', `${glareX}%`);
+                frame.style.setProperty('--glare-y', `${glareY}%`);
+            }
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.classList.remove('is-interacting');
+            if (frame) {
+                // Reset smoothly
+                frame.style.setProperty('--rotate-x', '0deg');
+                frame.style.setProperty('--rotate-y', '0deg');
+            }
+        });
+    });
+});
+
+
