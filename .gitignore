@@ -13,3 +13,7 @@ __pycache__/
 # Systémové soubory & Dokumenty
 .DS_Store
 *.pdf
+
+# Node.js
+node_modules/
+npm-debug.log*
